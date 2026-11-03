@@ -1,0 +1,60 @@
+{
+  "manifest_version": 2,
+  "type": "plugin",
+  "id": "hxlog/dsh-skills-tools",
+  "version": "1.0.0",
+  "channel": "stable",
+  "name": "dsh-skills-tools",
+  "description": "Skills manager for DeepSeek Harness: import skills straight from a Git repository (GitHub, GitLab or your intranet), enable them on demand, and browse SKILL.md resources in Settings.",
+  "runtime": {
+    "type": "plugin"
+  },
+  "entrypoints": {
+    "bundle": "cordis.patch.yml"
+  },
+  "capabilities": [
+    "skills.management",
+    "skills.provider",
+    "git.import",
+    "settings.panel"
+  ],
+  "permissions": [
+    "fs.read",
+    "fs.write",
+    "network",
+    "process.spawn"
+  ],
+  "dependencies": [],
+  "compatibility": {
+    "os": [
+      "linux",
+      "darwin",
+      "win32"
+    ],
+    "node": ">=22.13.0"
+  },
+  "publisher": {
+    "id": "hxlog",
+    "provider": "github",
+    "url": "https://github.com/hxlog"
+  },
+  "security": {},
+  "metadata": {
+    "category": "tools",
+    "tags": [
+      "skills",
+      "skill-manager",
+      "agent-skills",
+      "git",
+      "settings",
+      "dsh-plugin"
+    ],
+    "repository": "hxlog/dsh-skills-tools",
+    "homepage": "https://github.com/hxlog/dsh-skills-tools"
+  },
+  "source": {
+    "provider": "github",
+    "repo": "hxlog/dsh-skills-tools",
+    "url": "https://github.com/hxlog/dsh-skills-tools"
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "name": "dsh-skills-tools",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Import Git skills into DeepSeek Harness, manage them like Cursor, and enable or disable each skill on demand",
+  "icon": "icon.svg",
+  "main": "./lib/index.js",
+  "exports": {
+    ".": {
+      "default": "./lib/index.js"
+    },
+    "./client": {
+      "default": "./client/client.js"
+    },
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "lib",
+    "client/client.js",
+    "locale",
+    "cordis.patch.yml",
+    "icon.svg",
+    "README.md",
+    "README.en.md",
+    "LICENSE"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-settings"
+      ]
+    }
+  },
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "test": "node scripts/smoke.mjs",
+    "test:manager": "node scripts/manager-test.mjs",
+    "test:provider": "node scripts/provider-test.mjs",
+    "ci-check": "node scripts/ci-check.mjs",
+    "verify:dsh-go": "node scripts/verify-dsh-go.mjs",
+    "verify:listings": "node scripts/verify-listings.mjs"
+  },
+  "license": "MIT",
+  "author": "Xingyu Liu <xingyuliu@outlook.sg>",
+  "homepage": "https://github.com/hxlog/dsh-skills-tools",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hxlog/dsh-skills-tools.git"
+  },
+  "bugs": {
+    "url": "https://github.com/hxlog/dsh-skills-tools/issues"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "deepseek",
+    "skills",
+    "agent-skills",
+    "skill-manager",
+    "cursor",
+    "settings"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -1,0 +1,6 @@
+# dsh-skills-tools bundle layer: one host-side row.
+# The client half (client/client.js) is discovered from this row's package
+# manifest (dsh.client.platform = web) and served by /plugins.
+- insert:
+    - id: skills-tools
+      name: dsh-skills-tools
