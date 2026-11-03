@@ -93,11 +93,19 @@
 
 ## 6. 真实环境切换（最终步骤）
 
-1. 备份：%TEMP%\luban-backup-<timestamp>.zip（项目 .dsh/skills、项目 .dsh/luban、~/.dsh/luban、web profile patch）。
-2. 删除项目 .dsh/skills 的 junction 与 Deepseek_harness/.dsh/luban。
-3. 删除 ~/.dsh/luban 与 web profile 中的 luban-skills patch 行。
-4. 在 desktop profile 安装插件并启用 bundle，重启 DSH Desktop。
-5. 导入 luban（ref pro），确认 68 个技能全部启用、DSH 已加载。
-6. 触发 git-workflow / project-docs 验证。
+已完成（2026-11-03，DSH_HOME=C:\Users\Xingy\.dsh，desktop profile）：
 
-结果：切换完成后在此补清理清单、最终 summary 与触发记录。
+1. 备份：`%TEMP%\luban-backup-20261103-210349.zip`（8.99 MB；含项目 `.dsh\skills` junction 清单、项目 `.dsh\luban`、`~/.dsh\luban`、web profile patch）。
+2. 先在真实 DSH_HOME 预导入 luban：ref `pro`，commit `f2a38990`，68 个技能全部启用；`state.json` 校验 `repos=1 skills=68 enabled=68`。
+3. desktop profile 安装并启用插件：`dsh plugin --profile desktop add dsh-skills-tools@1.0.0` 成功；`dependencies` 与 `dsh.profile.bundles` 均含 `dsh-skills-tools`；`profiles/desktop/node_modules/dsh-skills-tools/package.json` 版本 1.0.0。
+4. 清理 luban：
+   - 删除项目 `.dsh\skills` 下 67 个 junction（`junctions_removed=67`），随后删除空目录；
+   - 删除项目 `.dsh\luban` 与 `~/.dsh\luban`（含 site、同步脚本、clone），`exists=False`；
+   - 删除 web profile `cordis.patch.yml` 的 `luban-skills` insert 块（第 399–433 行），剩余 `luban` 引用 0 处。
+
+待重启后验证（重启 DSH Desktop 会结束当前会话，故单独执行）：
+
+- 设置 → 技能页出现 68 个技能且全部启用，provider 为 `dsh-skills-tools`；
+- 触发 `project-docs` / `git-workflow` 返回技能首行（项目文档入口分发 / # Git Workflow 完整流程）；
+- 关闭其中 1–2 个技能后触发返回 UNAVAILABLE，再重新启用恢复；
+- 用插件 UI 新增本地技能、暂停/启用、删除，确认状态持久化。
