@@ -83,12 +83,13 @@
 
 ## 5. 发布
 
-- npm：dsh-skills-tools@1.0.0（latest）
-- GitHub：hxlog/dsh-skills-tools，tag v1.0.0，release notes 与 docs/release-notes-v1.0.0.md 一致
+- npm：`dsh-skills-tools@1.0.0`，dist-tag `latest`（2026-11-03T13:01:57Z 发布）。
+  `npm view dsh-skills-tools version` → `1.0.0`；registry 中另有 `0.0.0-stage` 占位版本（发布前用于锁定包名）。
+- GitHub：https://github.com/hxlog/dsh-skills-tools ，tag `v1.0.0`，
+  release：https://github.com/hxlog/dsh-skills-tools/releases/tag/v1.0.0
 - dsh-go：npm run verify:dsh-go 通过
 - 市场材料：docs/MARKETPLACES.md、docs/SUBMISSION-KIT.md
-
-结果：发布完成后在此补 npm / GitHub 链接与 `npm view dsh-skills-tools version` 输出。
+- 已知项：`.github/workflows/ci.yml` 因 gh token 缺少 `workflow` scope 暂未推送，待 `gh auth refresh -s workflow` 后补推。
 
 ## 6. 真实环境切换（最终步骤）
 
