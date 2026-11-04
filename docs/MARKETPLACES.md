@@ -52,6 +52,9 @@ Body: Import Agent Skills from any Git repository, toggle each skill on or off, 
 | --- | --- | --- | --- |
 | vvlife/awesome-deepseek-harness-plugins | README 单行新增（Tools & Editor UX） | ✅ 已合并 | https://github.com/vvlife/awesome-deepseek-harness-plugins/pull/176 |
 | jiji262/awesome-deepseek-harness | README 单行新增（Agent Skills） | 🟡 待审 | https://github.com/jiji262/awesome-deepseek-harness/pull/52 |
+| Zhiyuan-Fan/Awesome-DeepSeek-Harness-Plugins（563★） | Issue 请求收录 | 🟡 待审 | https://github.com/Zhiyuan-Fan/Awesome-DeepSeek-Harness-Plugins/issues/108 |
+| beancookie/awesome-dsh-plugin（188★） | README + README.en 单行新增（技能包） | 🟡 待审 | https://github.com/beancookie/awesome-dsh-plugin/pull/265 |
+| kejixiaoliang/awesome-dsh-plugins（73★） | plugins/skills.md 追加一条 | 🟡 待审 | https://github.com/kejixiaoliang/awesome-dsh-plugins/pull/188 |
 | Dominic789654/awesome-deepseek-harness（397★） | README + README.zh-CN 单行新增（Skills） | 🟡 待审（CI 已通过） | https://github.com/Dominic789654/awesome-deepseek-harness/pull/732 |
 | 0xsline/awesome-deepseek-harness（1.2k★） | README + README.zh-CN 单行新增（Tools & Utilities） | 🟡 待审 | https://github.com/0xsline/awesome-deepseek-harness/pull/789 |
 | AdamPlatin123/dsh-plugin-radar（1.5k★） | PLUGINS.md 表格追加一行 | 🟡 待审 | https://github.com/AdamPlatin123/dsh-plugin-radar/pull/1020 |
