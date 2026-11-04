@@ -2,7 +2,7 @@
   "name": "dsh-skills-tools",
   "version": "1.1.0",
   "type": "module",
-  "description": "Skills manager for DeepSeek Harness: import skills from Git repositories, group them by repository, enable them on demand, and preview SKILL.md content in Settings.",
+  "description": "DeepSeek Harness 的 Skills 管理器：从 Git 仓库导入技能，按仓库分组管理，随时启用、停用、补齐与查看内容。",
   "icon": "icon.svg",
   "main": "./lib/index.js",
   "exports": {
