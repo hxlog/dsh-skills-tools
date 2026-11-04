@@ -63,10 +63,10 @@
 8. 删除：移除 demo-skill 后 summary 回到 68、repos 1；fixture 的仓库记录与
    `repos/skills-fixture-local-*` 快照目录被立即删除，未留下孤儿目录。
 9. 截图：
-   - `docs/screenshots/skills-empty.png`：空状态
-   - `docs/screenshots/import-scan.png`：导入扫描（68 项、重名提示）
-   - `docs/screenshots/skills-list.png`：68 项列表与开关
-   - `docs/screenshots/skill-detail.png`：展开详情（SKILL.md 原文）
+   - `docs/screenshots/skills-overview.png`：按仓库分组（仓库级开关、可导入标记）
+   - `docs/screenshots/skill-content.png`：展开 SKILL.md 正文
+   - `docs/screenshots/import-more.png`：补齐仓库剩余技能
+   - `docs/screenshots/import-dialog.png`：导入技能对话框
 
 ## 4. 技能可触发性（只读）
 
@@ -126,4 +126,4 @@
 | 导入更多 | 对话框列出 `alpha-one`（已导入、置灰）与 `alpha-two`（可勾选）；全选后「导入所选（1）」→ 提示「已导入 1 个技能」；仓库变为「共 2 个技能，已导入 2」 |
 | 回归 | manager-test 17 组、provider-test 7 项、ci-check、smoke 全部通过 |
 
-截图：`docs/screenshots/skills-grouped.png`。
+截图：`docs/screenshots/skills-overview.png`、`docs/screenshots/skill-content.png`、`docs/screenshots/import-more.png`、`docs/screenshots/import-dialog.png`。

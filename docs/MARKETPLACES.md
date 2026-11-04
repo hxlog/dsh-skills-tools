@@ -21,9 +21,10 @@
 
 ## 截图
 
-- docs/screenshots/skills-grouped.png：设置 → 技能列表（按仓库分组、仓库级开关、导入更多）
-- docs/screenshots/import-scan.png：导入对话框扫描结果（重名建议）
-- docs/screenshots/skill-detail.png：技能行展开详情（SKILL.md 原文、路径、更新/移除）
+- docs/screenshots/skills-overview.png：设置 → 技能（按仓库分组、仓库级开关、可导入标记）
+- docs/screenshots/skill-content.png：展开查看 SKILL.md 正文
+- docs/screenshots/import-more.png：从仓库补齐剩余技能
+- docs/screenshots/import-dialog.png：导入技能对话框
 
 ## 关键词
 

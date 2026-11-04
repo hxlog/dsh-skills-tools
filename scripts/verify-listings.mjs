@@ -11,7 +11,10 @@ const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'))
 const manifest = JSON.parse(fs.readFileSync(path.join(root, 'dsh-package.json'), 'utf8'))
 const readme = fs.readFileSync(path.join(root, 'README.md'), 'utf8')
 const readmeEn = fs.readFileSync(path.join(root, 'README.en.md'), 'utf8')
-const release = fs.readFileSync(path.join(root, 'docs', 'release-notes-v1.0.0.md'), 'utf8')
+const releaseNotes = fs.readdirSync(path.join(root, 'docs'))
+  .filter(function (name) { return /^release-notes-v.*\.md$/.test(name) })
+  .map(function (name) { return fs.readFileSync(path.join(root, 'docs', name), 'utf8') })
+  .join('\n')
 const marketplace = fs.readFileSync(path.join(root, 'docs', 'MARKETPLACES.md'), 'utf8')
 
 const problems = []
@@ -21,7 +24,7 @@ function check(name, fn) {
 
 check('version appears consistently', function () {
   assert.ok(readme.includes(pkg.version), 'README.md must mention ' + pkg.version)
-  assert.ok(release.includes(pkg.version), 'release notes must mention ' + pkg.version)
+  assert.ok(releaseNotes.includes(pkg.version), 'release notes must mention ' + pkg.version)
   assert.equal(manifest.version, pkg.version)
 })
 
@@ -42,7 +45,7 @@ check('marketplace keywords and description', function () {
 })
 
 check('screenshots are referenced or pending', function () {
-  const shots = ['skills-list.png', 'import-scan.png', 'skill-detail.png']
+  const shots = ['skills-overview.png', 'skill-content.png', 'import-more.png', 'import-dialog.png']
   const dir = path.join(root, 'docs', 'screenshots')
   for (const shot of shots) {
     const referenced = marketplace.includes(shot)

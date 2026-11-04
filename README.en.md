@@ -1,80 +1,127 @@
-# dsh-skills-tools
+<p align="center">
+  <img src="https://cdn.jsdelivr.net/gh/hxlog/dsh-skills-tools@main/docs/logo.png" width="72" height="72" alt="dsh-skills-tools" />
+</p>
 
-Manage Agent Skills as assets: import them from a Git repository (GitHub, GitLab or your intranet) or a local folder, then enable, disable, update and remove them in **Settings → Skills** — the Cursor-like workflow for the DSH skill catalog.
+<h1 align="center">dsh-skills-tools</h1>
 
-- Version **1.0.0**, MIT, zero dependencies, ESM host + classic-script client
-- Settings section **Skills** (order 19, right after MCP)
+<p align="center">
+  <b>Skills manager for DeepSeek Harness.</b><br />
+  Import Agent Skills from Git repositories or local folders, manage them by repository, and enable, disable, complete or inspect them at any time.
+</p>
 
-## Why
+<p align="center">
+  <a href="https://www.npmjs.com/package/dsh-skills-tools"><img src="https://img.shields.io/npm/v/dsh-skills-tools?color=black" alt="npm version" /></a>
+  <a href="https://www.npmjs.com/package/dsh-skills-tools"><img src="https://img.shields.io/npm/dm/dsh-skills-tools?color=black" alt="npm downloads" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-black.svg" alt="license" /></a>
+  <a href="https://nodejs.org"><img src="https://img.shields.io/badge/node-%3E%3D22.13-black.svg" alt="node" /></a>
+  <a href="https://github.com/hxlog/dsh-skills-tools"><img src="https://img.shields.io/badge/GitHub-hxlog%2Fdsh--skills--tools-black?logo=github" alt="GitHub" /></a>
+</p>
 
-Claude Code ships a **/skills** menu with on/off overrides, Cursor discovers .cursor/skills and plugin marketplaces, and Codex uses skill-installer to copy skills from GitHub. DSH native discovery scans directories but does not import, snapshot or toggle them.
+<p align="center">
+  <a href="https://github.com/hxlog/dsh-skills-tools">GitHub</a> ·
+  <a href="https://www.npmjs.com/package/dsh-skills-tools">npm</a> ·
+  <a href="https://github.com/hxlog/dsh-skills-tools/issues">Issues</a> ·
+  <a href="README.md">中文</a>
+</p>
 
-dsh-skills-tools fills that gap:
+<p align="center">
+  <img src="https://cdn.jsdelivr.net/gh/hxlog/dsh-skills-tools@main/docs/screenshots/skills-overview.png" width="49%" alt="Skills grouped by repository" />
+  <img src="https://cdn.jsdelivr.net/gh/hxlog/dsh-skills-tools@main/docs/screenshots/skill-content.png" width="49%" alt="Expanded SKILL.md content" />
+</p>
 
-1. **Import** from a Git URL (or local folder), optionally pinned to a branch, tag, commit or subdirectory.
-2. **Enable / disable** instantly; the DSH catalog is invalidated and disabled skills never reach the model context.
-3. **Read-only snapshots**: each repository is copied by commit into the data folder; the source is never modified.
-4. **Content-addressed updates**: check the remote head, then switch snapshots only after a successful clone.
-5. **Resources keep working**: skills register with resourceBase = { kind: "directory", path: snapshot/skill }, so ../../assets and ../check/... references resolve.
+> Disabled skills are not registered with the model: no context cost, no accidental calls.
 
-## Install
+## ✨ Features
 
-    dsh plugin add dsh-skills-tools
-    # or from a checkout
-    dsh plugin add file:D:/PythonProjects/dsh-skills-tools
+| Capability | Details |
+| --- | --- |
+| **Grouped by repository** | Skills are grouped into collapsible repository cards. Repositories with enabled skills come first; inside a repository, enabled skills come first. |
+| **Import the rest later** | A partially imported repository shows "N available". Click **Import more** to pick the remaining skills from the existing snapshot — no re-clone. |
+| **Repository switch** | Enable or disable every skill in a repository at once; the switch shows a mixed state when only some skills are enabled. |
+| **Inline content** | The chevron on each row expands the SKILL.md text, source repository, commit, path and update time, with update and remove actions. |
+| **Git import and snapshots** | https / ssh / intranet repositories, branches, tags, commits and subdirectories. Imports are read-only snapshots; source repositories are never modified. |
+| **Update checks** | Compare the remote head and switch snapshots only after a successful clone. |
 
-Add the bundle row to a profile's cordis.patch.yml if you prefer:
+<p align="center">
+  <img src="https://cdn.jsdelivr.net/gh/hxlog/dsh-skills-tools@main/docs/screenshots/import-more.png" width="49%" alt="Import remaining skills from a repository" />
+  <img src="https://cdn.jsdelivr.net/gh/hxlog/dsh-skills-tools@main/docs/screenshots/import-dialog.png" width="49%" alt="Import skills" />
+</p>
 
-    - insert:
-        - id: skills-tools
-          name: dsh-skills-tools
+## 🚀 Install
 
-Restart DSH, then open **Settings → Skills**.
+Requires **DeepSeek Harness 0.2.x** (Web GUI `dsh web` or DSH Desktop) and **Node.js ≥ 22.13**. Published on npm: [dsh-skills-tools](https://www.npmjs.com/package/dsh-skills-tools).
 
-## Usage
+> ⚠️ This is a **DeepSeek Harness plugin**, not a normal npm library: `npm i dsh-skills-tools` only downloads the package, it still has to be installed into a DSH profile.
 
-1. **Import skills** → paste a repository URL or local path.
-2. Optionally pin a ref (branch / tag / commit) or a subdirectory.
-3. **Scan**, select skills (duplicate names get an editable suggestion), then **Install selected**.
-4. Toggle rows on/off, search and filter, expand a row to read SKILL.md or update/remove it.
-5. **Check updates** marks skills whose repository has a newer commit; **Update from upstream** clones and switches the snapshot.
+**Install from the plugin page (recommended)**
 
-Supported sources: https://host/owner/repo(.git), GitHub-style /tree/<ref>/<subdir>, git@host:owner/repo.git, file:///path, and absolute local paths.
+1. Open DSH Web (or DSH Desktop) → **Plugins** (Desktop: **Settings → Plugins**).
+2. Click install, enter `dsh-skills-tools`, confirm.
+3. Enable the new bundle, refresh, then open **Settings → Skills**.
 
-## Intranet and private repositories
+**Install from the CLI**
 
-No token is stored. The plugin reuses your local git credentials (credential helper or SSH agent) and sets GIT_TERMINAL_PROMPT=0 so a missing credential fails fast instead of hanging.
+```bash
+dsh plugin add dsh-skills-tools                    # default profile
+dsh plugin --profile web add dsh-skills-tools      # Web
+dsh plugin --profile desktop add dsh-skills-tools  # Desktop
+```
 
-## Architecture
+Current version **1.1.0**: grouped by repository, repository switch, and completing skills from an existing snapshot.
 
-    Git repo / local folder
-      → clone --depth 1 --single-branch (or direct read)
-      → $DSH_HOME/dsh-skills-tools/repos/<slug>-<commit>   read-only snapshot
-      → scan SKILL.md (skips .git and symlinks, bounded depth/files)
-      → $DSH_HOME/dsh-skills-tools/state.json              repos + skills + enabled
-      → ctx.skills.registerProvider(rank 350)
-      → DSH catalog (enabled skills with an existing SKILL.md only)
+> Restart `dsh web` / DSH Desktop after upgrading.
+>
+> `dsh plugin add` only installs the package; it does not enable the bundle. Enable it once in the plugin page, or make sure `dsh-skills-tools` is in `dsh.profile.bundles`.
 
-Ranks: project-dsh 100, project-agents 200, **dsh-skills-tools 350**, user-dsh 400, user-agents 500, bundled 600.
+## ⚡ Quick start
 
-State writes use a directory lock plus atomic rename; the provider memoizes by state.json mtime, so several DSH windows share one library.
+1. **Settings → Skills → Import skills**: paste a Git URL (`https://`, `git@`, `file://` or a local absolute path). Intranet repositories use your local git credentials.
+2. Optionally set a **branch / tag / commit** and **subdirectory**, click **Scan**, select skills (duplicate names get an editable suggestion) and click **Install selected**. Installed skills are enabled.
+3. Manage by repository: the repository switch toggles all its skills, row switches toggle one, **Import more** completes partially imported repositories, and the chevron shows the content.
 
-## Security
+## 🧩 How it works
 
-- Every route is gated by DSH connection.requestRejection (Host/Origin/session); other local processes cannot drive the library.
-- 256 KiB request body cap, 20000 files / 300 MiB snapshot cap, 2 MiB SKILL.md cap.
-- Snapshots never follow symlinks; paths are verified to stay inside the snapshot; removal is verified to stay inside repos/.
-- Repository scripts are never executed; git runs with an argv array, never through a shell.
+```
+~/.dsh/dsh-skills-tools/
+├── state.json                 repositories, skills, enabled state
+└── repos/<repo>-<commit>/     read-only snapshot
+```
 
-## Development
+- **Snapshot isolation**: every import or update copies the repository into the data folder. Removing a skill only changes state.
+- **Registration-time toggles**: enabled state decides whether a skill is registered with the DSH skill catalog; disabled skills never reach the model.
+- **REST API**: `GET /skills-tools/api/state`, `POST /import/scan|commit`, `POST /repos/inspect|import|toggle|check-updates`, `POST /skills/toggle|bulk|remove|update`, `POST /refresh`, `GET /logs`. See [docs/API.md](docs/API.md).
 
-    npm test
-    npm run test:manager
-    npm run ci-check
-    node scripts/build-client.mjs
+## 🔒 Security
 
-Client source: client/client.src.js + client/ui.css → built into client/client.js (inlined CSS, classic script).
+- **No tokens stored**: git authentication stays with your credential helper or SSH key.
+- **Read-only snapshots**: imports and updates never modify your repositories.
+- **No telemetry**: no network requests besides the Git repositories you configure.
 
-## License
+## 📋 Requirements and limits
 
-MIT © 2026 Xingyu Liu
+- **Runtime**: DeepSeek Harness 0.2.x (Web or Desktop), **Node.js ≥ 22.13**
+- **Platforms**: DSH Web (`--profile web`) and DSH Desktop (`--profile desktop`)
+- **Files**: reads and writes `~/.dsh/dsh-skills-tools/`; reads the local folder only when you import one
+- **Network**: only the Git repositories you configure, during import and update checks
+- **Processes**: invokes local `git` for import and update checks
+
+**Known limits**
+
+- Manages the skills of the current DSH profile only
+- Git sources require local `git`; intranet repositories need working credentials
+- Content preview is capped at 64 KiB
+
+## ❓ FAQ
+
+| Question | Answer |
+| --- | --- |
+| No Skills section in Settings | The bundle is probably not enabled. Enable it in the plugin page, refresh, then restart `dsh web` if needed. |
+| Import fails | Complete git authentication first; verify the branch / subdirectory and that the repository contains SKILL.md files. |
+| Can the model still call a disabled skill? | No. Disabled skills are not registered. |
+| Where is the data? | `~/.dsh/dsh-skills-tools/state.json`; delete it to reset. |
+
+## 📄 License
+
+[MIT](LICENSE) · Powered by [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)
+
+[![](https://img.shields.io/badge/powered_by-dsh-4D6BFE?style=flat-square&logo=deepseek&logoColor=white)](https://github.com/deepseek-ai/deepseek-harness)

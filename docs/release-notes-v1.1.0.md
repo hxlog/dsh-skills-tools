@@ -26,7 +26,7 @@
 
 - `npm test`、`npm run test:manager`（17 组）、`npm run test:provider`（7 项）、`npm run ci-check` 全部通过；
 - 隔离 profile + Playwright E2E：仓库分组、排序、仓库开关、半选状态、chevron 展开正文、「导入更多」补齐技能均验证通过；
-- 截图：`docs/screenshots/skills-grouped.png`。
+- 截图：`docs/screenshots/skills-overview.png`、`docs/screenshots/skill-content.png`、`docs/screenshots/import-more.png`、`docs/screenshots/import-dialog.png`。
 
 ## 升级
 

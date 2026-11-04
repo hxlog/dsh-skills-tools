@@ -5,7 +5,7 @@
   "version": "1.1.0",
   "channel": "stable",
   "name": "dsh-skills-tools",
-  "description": "Skills manager for DeepSeek Harness: import skills straight from a Git repository (GitHub, GitLab or your intranet), enable them on demand, and browse SKILL.md resources in Settings.",
+  "description": "Skills manager for DeepSeek Harness: import skills from Git repositories, group them by repository, enable them on demand, and preview SKILL.md content in Settings.",
   "runtime": {
     "type": "plugin"
   },
