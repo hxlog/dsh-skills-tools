@@ -54,6 +54,7 @@ Body: Import Agent Skills from any Git repository, toggle each skill on or off, 
 | jiji262/awesome-deepseek-harness | README 单行新增（Agent Skills） | 🟡 待审 | https://github.com/jiji262/awesome-deepseek-harness/pull/52 |
 | dshmarketplace.dev | /submit 表单（服务器端 GitHub 校验） | 🟡 暂不可提交：服务端 GitHub 限流（2026-11-04 实测） | https://dshmarketplace.dev/submit |
 | dshplugin.app | /submit 表单 + Cloudflare Turnstile | ⛔ 需人工在浏览器完成验证码 | https://dshplugin.app/submit |
+| dshmarket.com（10.5k★，DSH 内置市场） | 目录来自 awesome-dsh-plugin registry，PR #11849 合入后自动上架 | 🟡 依赖 awesome-dsh-plugin PR | https://dshmarket.com |
 | dsh.so 公开 tracker | Issue 登记（表单 API 落到旧仓库时兜底） | 🟡 待审 | https://github.com/dsh-so/dsh-plugin-submissions/issues/23 |
 | dsh.so（25k 插件注册表） | /submit 表单：抽查通过后提交，后端 issue 审核 | 🟡 已提交（内部 issue #415，2026-11-04） | https://www.dsh.so/submit |
 | deepseekplugin.org（自助 API 投稿） | POST /api/submissions，即时发布 | ✅ 已发布（2026-11-04，state=published） | https://deepseekplugin.org/plugins |
