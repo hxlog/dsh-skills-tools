@@ -52,6 +52,9 @@ Body: Import Agent Skills from any Git repository, toggle each skill on or off, 
 | --- | --- | --- | --- |
 | vvlife/awesome-deepseek-harness-plugins | README 单行新增（Tools & Editor UX） | ✅ 已合并 | https://github.com/vvlife/awesome-deepseek-harness-plugins/pull/176 |
 | jiji262/awesome-deepseek-harness | README 单行新增（Agent Skills） | 🟡 待审 | https://github.com/jiji262/awesome-deepseek-harness/pull/52 |
+| hashgraph-online/awesome-ai-plugins（837★） | README 单行新增 | 🟡 待审 | https://github.com/hashgraph-online/awesome-ai-plugins/pull/1147 |
+| zhu1090093659/dsh-community-plugins（1k★） | community.json 追加一条 | 🟡 待审 | https://github.com/zhu1090093659/dsh-community-plugins/pull/77 |
+| leenkcool/Blue-Whale-Harness（196★） | Issue 收录模板 | 🟡 待审 | https://github.com/leenkcool/Blue-Whale-Harness/issues/188 |
 | Zhiyuan-Fan/Awesome-DeepSeek-Harness-Plugins（563★） | Issue 请求收录 | 🟡 待审 | https://github.com/Zhiyuan-Fan/Awesome-DeepSeek-Harness-Plugins/issues/108 |
 | beancookie/awesome-dsh-plugin（188★） | README + README.en 单行新增（技能包） | 🟡 待审 | https://github.com/beancookie/awesome-dsh-plugin/pull/265 |
 | kejixiaoliang/awesome-dsh-plugins（73★） | plugins/skills.md 追加一条 | 🟡 待审 | https://github.com/kejixiaoliang/awesome-dsh-plugins/pull/188 |
