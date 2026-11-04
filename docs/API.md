@@ -64,6 +64,44 @@
 
     { "ok": true, "name": "git-workflow", "path": "…/SKILL.md", "bytes": 8123, "truncated": false, "content": "---\nname: …" }
 
+## 仓库分组（v1.1）
+
+### POST /repos/inspect
+
+请求：`{ "repoId": "repo_..." }`
+
+扫描该仓库的本地快照，返回仓库内全部技能及导入状态：
+
+```json
+{
+  "ok": true,
+  "repo": { "id": "repo_...", "url": "...", "ref": "main", "shortCommit": "f2a38990", "skills": 3, "available": 5, "enabled": 2 },
+  "imported": 3,
+  "available": 5,
+  "skills": [
+    { "relPath": "plugins/a/skills/x", "name": "x", "suggestedName": "x", "description": "...", "valid": true, "imported": false, "enabled": false }
+  ]
+}
+```
+
+### POST /repos/import
+
+请求：`{ "repoId": "repo_...", "skills": [{ "relPath": "plugins/a/skills/x", "name": "x" }] }`
+
+从**现有快照**补充导入技能（不重新克隆）。返回：
+
+```json
+{ "ok": true, "installed": ["x"], "skipped": [{ "relPath": "...", "name": "...", "reason": "同名 skill 已存在（来自另一个仓库）..." }], "repo": "repo_...", "available": 5 }
+```
+
+### POST /repos/toggle
+
+请求：`{ "repoId": "repo_...", "enabled": true }`
+
+一次启用或停用该仓库下的全部技能，返回 `{ "ok": true, "changed": 3 }`。
+
+`/state` 的 `repos[]` 新增 `available` 字段（已知时可导入技能总数，未知时为 null）。
+
 ## 导入
 
 ### POST /import/scan

@@ -21,9 +21,9 @@
 
 ## 截图
 
-- docs/screenshots/skills-list.png：设置 → 技能列表（68 项、开关、筛选）
+- docs/screenshots/skills-grouped.png：设置 → 技能列表（按仓库分组、仓库级开关、导入更多）
 - docs/screenshots/import-scan.png：导入对话框扫描结果（重名建议）
-- docs/screenshots/skill-detail.png：展开详情（SKILL.md 原文、路径、更新/移除）
+- docs/screenshots/skill-detail.png：技能行展开详情（SKILL.md 原文、路径、更新/移除）
 
 ## 关键词
 

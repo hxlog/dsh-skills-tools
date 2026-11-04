@@ -109,3 +109,21 @@
 - 触发 `project-docs` / `git-workflow` 返回技能首行（项目文档入口分发 / # Git Workflow 完整流程）；
 - 关闭其中 1–2 个技能后触发返回 UNAVAILABLE，再重新启用恢复；
 - 用插件 UI 新增本地技能、暂停/启用、删除，确认状态持久化。
+
+
+## 7. v1.1 仓库分组（隔离环境 E2E）
+
+环境：`DSH_HOME=%TEMP%\dsh-skills-e2e`，profile `skillsverify`，插件以 `file:` 方式安装；本地 fixture 仓库 `skm-aaa`（2 个技能）与 `skm-zzz`（3 个技能）。浏览器：Playwright，通过页面内 fetch 完成导入。
+
+| 验收点 | 结果 |
+| --- | --- |
+| 分组渲染 | 2 个仓库卡片；`skm-aaa` 显示「共 2 个技能，已导入 1」+「可导入 1 个」；`skm-zzz` 显示 3/3 |
+| 仓库排序 | 停用 `skm-aaa`、启用 `skm-zzz` 后顺序变为 `skm-zzz → skm-aaa`（启用优先） |
+| 仓库开关 | 关闭 `skm-zzz` 后 3 个技能行全部 off、开关 `aria-checked=false`；再次开启恢复 |
+| 半选状态 | `skm-aaa` 停用 1/2 后 `data-mixed=true`、`aria-checked=false` |
+| 技能排序 | 组内 `alpha-two`（启用）排在 `alpha-one`（停用）之前 |
+| chevron 展开 | 点击后详情面板出现，`SKILL.md` 正文以纯文本展示（含 frontmatter 与标题） |
+| 导入更多 | 对话框列出 `alpha-one`（已导入、置灰）与 `alpha-two`（可勾选）；全选后「导入所选（1）」→ 提示「已导入 1 个技能」；仓库变为「共 2 个技能，已导入 2」 |
+| 回归 | manager-test 17 组、provider-test 7 项、ci-check、smoke 全部通过 |
+
+截图：`docs/screenshots/skills-grouped.png`。

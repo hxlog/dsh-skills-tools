@@ -28,7 +28,7 @@ window.__ModuleLoader__.load({
     var useCallback = React.useCallback;
     var useRef = React.useRef;
 
-    var CSS_TEXT = "/* dsh-skills-tools — Settings -> Skills panel.\n   Flat setting rows (no card frames), token-driven colours, light/dark safe. */\n.skm-root, .skm-modal {\n  --skm-fs-title: 18px;\n  --skm-fs-body: 14px;\n  --skm-fs-desc: 13px;\n  --skm-fs-caption: 12px;\n  --skm-fs-tiny: 11px;\n  --skm-fs-tag: 10px;\n  --skm-line-title: 26px;\n  --skm-line-body: 20px;\n  --skm-line-desc: 18px;\n  --skm-gap: 12px;\n  --skm-gap-sm: 8px;\n  --skm-gap-xs: 6px;\n  --skm-hairline: .5px;\n  --skm-focus: var(--dsw-focus-ring-width, 2px) solid var(--dsw-focus-ring-color, var(--dsw-alias-state-business-primary));\n  color: var(--dsw-alias-label-primary);\n  font-family: var(--dsw-font-family, inherit);\n  font-size: var(--skm-fs-body);\n  line-height: var(--skm-line-body);\n}\n.skm-root *, .skm-modal *, .skm-root *::before, .skm-modal *::before { box-sizing: border-box; }\n.skm-root { display: flex; flex-direction: column; gap: var(--skm-gap); max-width: 820px; padding-top: 16px; }\n\n.skm-headRow { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--skm-gap); flex-wrap: wrap; }\n.skm-headText { display: flex; flex-direction: column; gap: 2px; min-width: 0; }\n.skm-heading { margin: 0; font-size: var(--skm-fs-title); font-weight: 600; line-height: var(--skm-line-title); }\n.skm-intro { margin: 0; color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-desc); line-height: var(--skm-line-desc); }\n.skm-headActions { display: flex; align-items: center; gap: var(--skm-gap-sm); flex: none; }\n.skm-summary { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-caption); }\n.skm-summary strong { color: var(--dsw-alias-label-secondary); font-weight: 600; }\n\n.skm-toolbar { display: flex; align-items: center; justify-content: space-between; gap: var(--skm-gap-sm); flex-wrap: wrap; }\n.skm-search { display: flex; align-items: center; gap: 6px; flex: 1 1 220px; max-width: 320px; height: 30px; padding: 0 8px; border: var(--skm-hairline) solid var(--dsw-alias-border-l1); border-radius: 7px; background: var(--dsw-alias-bg-layer-1); color: var(--dsw-alias-label-tertiary); transition: border-color 120ms ease; }\n.skm-search:focus-within { border-color: var(--dsw-alias-label-caption); }\n.skm-search input { flex: 1 1 auto; min-width: 0; height: 100%; padding: 0; border: 0; outline: 0; background: transparent; color: var(--dsw-alias-label-primary); font: inherit; font-size: var(--skm-fs-desc); }\n.skm-search input::placeholder { color: var(--dsw-alias-label-tertiary); }\n.skm-toolbarEnd { display: flex; align-items: center; gap: var(--skm-gap-sm); flex-wrap: wrap; }\n.skm-seg { display: inline-flex; align-items: center; padding: 2px; border-radius: 7px; background: var(--dsw-alias-bg-layer-1); border: var(--skm-hairline) solid var(--dsw-alias-border-l1); }\n.skm-segBtn { height: 24px; padding: 0 10px; border: 0; border-radius: 5px; background: none; color: var(--dsw-alias-label-tertiary); font: inherit; font-size: var(--skm-fs-caption); cursor: pointer; }\n.skm-segBtn[data-active=\"true\"] { background: var(--dsw-alias-interactive-bg-hover); color: var(--dsw-alias-label-primary); }\n.skm-segBtn:hover { color: var(--dsw-alias-label-primary); }\n\n.skm-btn { display: inline-flex; align-items: center; justify-content: center; gap: 5px; height: 30px; padding: 0 12px; border-radius: 7px; border: var(--skm-hairline) solid transparent; font: inherit; font-size: var(--skm-fs-caption); font-weight: 500; line-height: 1; cursor: pointer; white-space: nowrap; transition: background 120ms ease, border-color 120ms ease, color 120ms ease; }\n.skm-btn:focus-visible { outline: var(--skm-focus); outline-offset: 1px; }\n.skm-btn[disabled] { opacity: .5; cursor: not-allowed; }\n.skm-btn--primary { background: var(--dsw-alias-state-business-primary); color: var(--dsw-alias-label-inverse, #fff); }\n.skm-btn--primary:hover:not([disabled]) { background: var(--dsw-alias-state-business-primary-hover, var(--dsw-alias-state-business-primary)); opacity: .92; }\n.skm-btn--outline { background: transparent; border-color: var(--dsw-alias-border-l1); color: var(--dsw-alias-label-secondary); }\n.skm-btn--outline:hover:not([disabled]) { background: var(--dsw-alias-interactive-bg-hover); color: var(--dsw-alias-label-primary); }\n.skm-btn--ghost { background: none; color: var(--dsw-alias-label-tertiary); }\n.skm-btn--ghost:hover:not([disabled]) { background: var(--dsw-alias-interactive-bg-hover); color: var(--dsw-alias-label-primary); }\n.skm-btn--danger { background: none; color: var(--dsw-alias-state-error-primary); border-color: var(--dsw-alias-border-l1); }\n.skm-btn--danger:hover:not([disabled]) { background: var(--dsw-alias-state-error-primary); color: #fff; border-color: transparent; }\n.skm-ibtn { width: 28px; height: 28px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: 6px; background: none; color: var(--dsw-alias-label-caption); cursor: pointer; }\n.skm-ibtn:hover:not([disabled]) { background: var(--dsw-alias-interactive-bg-hover); color: var(--dsw-alias-label-primary); }\n.skm-ibtn[disabled] { opacity: .4; cursor: not-allowed; }\n.skm-ibtn[data-danger=\"true\"]:hover:not([disabled]) { color: var(--dsw-alias-state-error-primary); }\n\n.skm-banner { display: flex; gap: 8px; align-items: flex-start; padding: 9px 11px; border-radius: 7px; background: var(--dsw-alias-bg-layer-1); border: var(--skm-hairline) solid var(--dsw-alias-border-l1); color: var(--dsw-alias-label-secondary); font-size: var(--skm-fs-caption); line-height: var(--skm-line-desc); }\n.skm-banner[data-tone=\"error\"] { color: var(--dsw-alias-state-error-primary); }\n.skm-banner[data-tone=\"warn\"] { color: var(--dsw-alias-label-secondary); }\n.skm-banner svg { flex: none; margin-top: 1px; }\n\n.skm-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }\n.skm-row { border-bottom: var(--skm-hairline) solid var(--dsw-alias-border-l1); }\n.skm-list > .skm-row:last-child { border-bottom: 0; }\n.skm-rowHead { display: flex; align-items: flex-start; gap: 10px; padding: 13px 0; }\n.skm-rowMain { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px; padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }\n.skm-nameRow { display: flex; align-items: center; gap: 6px; min-width: 0; flex-wrap: wrap; }\n.skm-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--skm-fs-body); font-weight: 500; line-height: var(--skm-line-body); }\n.skm-row[data-off=\"true\"] .skm-name { color: var(--dsw-alias-label-secondary); }\n.skm-desc { margin: 0; color: var(--dsw-alias-label-caption); font-size: var(--skm-fs-caption); line-height: var(--skm-line-desc); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }\n.skm-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-tiny); line-height: 16px; }\n.skm-meta code { font-family: var(--dsw-font-family-mono, ui-monospace, SFMono-Regular, Menlo, monospace); font-size: var(--skm-fs-tiny); }\n.skm-tag { display: inline-flex; align-items: center; height: 18px; padding: 0 6px; border-radius: 4px; border: var(--skm-hairline) solid var(--dsw-alias-border-l1); color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-tag); line-height: 1; white-space: nowrap; }\n.skm-tag[data-tone=\"accent\"] { color: var(--dsw-alias-state-business-primary); border-color: currentColor; }\n.skm-tag[data-tone=\"warn\"] { color: var(--dsw-alias-state-warning-primary, #c98a00); border-color: currentColor; }\n.skm-tag[data-tone=\"error\"] { color: var(--dsw-alias-state-error-primary); border-color: currentColor; }\n.skm-rowActions { flex: none; display: flex; align-items: center; gap: 2px; padding-top: 1px; }\n.skm-chevron { display: inline-flex; color: var(--dsw-alias-label-tertiary); transition: transform 120ms ease; }\n.skm-chevron[data-open=\"true\"] { transform: rotate(90deg); }\n\n.skm-switch { position: relative; flex: none; width: 32px; height: 18px; margin-top: 2px; padding: 0; border: 0; border-radius: 999px; background: var(--dsw-alias-border-l2, var(--dsw-alias-border-l1)); cursor: pointer; transition: background 150ms ease; }\n.skm-switch[aria-checked=\"true\"] { background: var(--dsw-alias-state-business-primary); }\n.skm-switch::after { content: \"\"; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.18); transition: transform 150ms ease; }\n.skm-switch[aria-checked=\"true\"]::after { transform: translateX(14px); }\n.skm-switch:focus-visible { outline: var(--skm-focus); outline-offset: 2px; }\n.skm-switch[disabled] { opacity: .5; cursor: not-allowed; }\n\n.skm-detail { display: flex; flex-direction: column; gap: 10px; margin: 2px 0 14px; padding: 12px; border-radius: 8px; background: var(--dsw-alias-bg-layer-1); }\n.skm-detailGrid { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 5px 10px; font-size: var(--skm-fs-caption); line-height: var(--skm-line-desc); }\n.skm-detailGrid dt { color: var(--dsw-alias-label-tertiary); }\n.skm-detailGrid dd { margin: 0; min-width: 0; color: var(--dsw-alias-label-secondary); overflow-wrap: anywhere; }\n.skm-detailGrid code { font-family: var(--dsw-font-family-mono, ui-monospace, SFMono-Regular, Menlo, monospace); font-size: var(--skm-fs-tiny); }\n.skm-detailActions { display: flex; align-items: center; gap: var(--skm-gap-sm); flex-wrap: wrap; }\n.skm-detailActions .skm-grow { flex: 1 1 auto; }\n.skm-codeWrap { position: relative; }\n.skm-code { margin: 0; max-height: 300px; overflow: auto; padding: 10px 12px; border-radius: 7px; border: var(--skm-hairline) solid var(--dsw-alias-border-l1); background: var(--dsw-alias-bg-layer-2, var(--dsw-alias-bg-layer-1)); color: var(--dsw-alias-label-secondary); font-family: var(--dsw-font-family-mono, ui-monospace, SFMono-Regular, Menlo, monospace); font-size: var(--skm-fs-tiny); line-height: 1.55; white-space: pre-wrap; word-break: break-word; }\n.skm-codeNote { margin: 0; color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-tiny); }\n.skm-inlineErr { margin: 0; color: var(--dsw-alias-state-error-primary); font-size: var(--skm-fs-caption); }\n\n.skm-empty { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 40px 16px; color: var(--dsw-alias-label-tertiary); text-align: center; }\n.skm-emptyTitle { color: var(--dsw-alias-label-secondary); font-size: var(--skm-fs-body); font-weight: 500; }\n.skm-emptyText { max-width: 420px; font-size: var(--skm-fs-caption); line-height: var(--skm-line-desc); }\n.skm-detailsSummary { cursor: pointer; color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-caption); }\n.skm-events { display: flex; flex-direction: column; gap: 4px; margin: 6px 0 0; padding: 10px 12px; border-radius: 7px; background: var(--dsw-alias-bg-layer-1); font-size: var(--skm-fs-tiny); line-height: 16px; color: var(--dsw-alias-label-tertiary); max-height: 220px; overflow: auto; }\n.skm-events div { display: flex; gap: 8px; }\n.skm-events time { flex: none; color: var(--dsw-alias-label-tertiary); font-variant-numeric: tabular-nums; }\n\n.skm-spin { animation: skm-spin 900ms linear infinite; }\n@keyframes skm-spin { to { transform: rotate(360deg); } }\n.skm-loading { display: flex; align-items: center; gap: 6px; padding: 24px 0; color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-caption); }\n\n/* ── Modal (portalled by React into the overlay root) ─────────────────── */\n.skm-overlay { position: fixed; inset: 0; z-index: 60; display: flex; align-items: flex-start; justify-content: center; padding: 8vh 16px 24px; background: rgba(0,0,0,.38); }\n.skm-modal { width: min(640px, 100%); max-height: 82vh; display: flex; flex-direction: column; border-radius: 12px; background: var(--dsw-alias-bg-layer-0, #fff); border: var(--skm-hairline) solid var(--dsw-alias-border-l1); box-shadow: 0 18px 48px rgba(0,0,0,.28); overflow: hidden; }\n.skm-modal[data-width=\"wide\"] { width: min(780px, 100%); }\n.skm-modalHead { display: flex; align-items: flex-start; gap: var(--skm-gap); padding: 16px 18px 10px; }\n.skm-modalTitle { margin: 0; flex: 1 1 auto; font-size: var(--skm-fs-body); font-weight: 600; line-height: var(--skm-line-body); }\n.skm-modalDesc { margin: 4px 0 0; color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-caption); line-height: var(--skm-line-desc); }\n.skm-modalBody { padding: 4px 18px 10px; overflow: auto; display: flex; flex-direction: column; gap: 10px; }\n.skm-modalFooter { display: flex; align-items: center; justify-content: flex-end; gap: var(--skm-gap-sm); padding: 12px 18px 16px; border-top: var(--skm-hairline) solid var(--dsw-alias-border-l1); }\n.skm-modalFooter .skm-grow { flex: 1 1 auto; }\n\n.skm-field { display: flex; flex-direction: column; gap: 5px; }\n.skm-fieldLabel { color: var(--dsw-alias-label-secondary); font-size: var(--skm-fs-caption); font-weight: 500; }\n.skm-input { width: 100%; height: 32px; padding: 0 10px; border: var(--skm-hairline) solid var(--dsw-alias-border-l1); border-radius: 7px; background: var(--dsw-alias-bg-layer-1); color: var(--dsw-alias-label-primary); font: inherit; font-size: var(--skm-fs-desc); outline: 0; }\n.skm-input:focus { border-color: var(--dsw-alias-state-business-primary); }\n.skm-hint { margin: 0; color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-tiny); line-height: 16px; }\n.skm-fieldRow { display: flex; gap: var(--skm-gap-sm); }\n.skm-fieldRow .skm-field { flex: 1 1 0; min-width: 0; }\n\n.skm-scanHead { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; color: var(--dsw-alias-label-secondary); font-size: var(--skm-fs-caption); }\n.skm-scanList { display: flex; flex-direction: column; gap: 2px; max-height: 280px; overflow: auto; margin: 0 -4px; padding: 0 4px; }\n.skm-scanRow { display: flex; align-items: flex-start; gap: 8px; padding: 7px 4px; border-radius: 6px; }\n.skm-scanRow:hover { background: var(--dsw-alias-interactive-bg-hover); }\n.skm-scanRow input[type=\"checkbox\"] { margin: 3px 0 0; accent-color: var(--dsw-alias-state-business-primary); }\n.skm-scanMain { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 1px; }\n.skm-scanName { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: var(--skm-fs-caption); font-weight: 500; }\n.skm-scanPath { color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-tiny); overflow-wrap: anywhere; }\n.skm-scanNameInput { width: 150px; height: 22px; padding: 0 6px; border: var(--skm-hairline) solid var(--dsw-alias-border-l1); border-radius: 5px; background: var(--dsw-alias-bg-layer-0, transparent); color: var(--dsw-alias-label-primary); font: inherit; font-size: var(--skm-fs-tiny); }\n.skm-scanRow[data-invalid=\"true\"] { opacity: .62; }\n.skm-scanRow[data-invalid=\"true\"] .skm-scanName { text-decoration: line-through; }\n@media (max-width: 640px) {\n  .skm-root { padding-top: 10px; }\n  .skm-headActions { width: 100%; justify-content: flex-end; }\n  .skm-search { max-width: none; }\n  .skm-detailGrid { grid-template-columns: minmax(0, 1fr); gap: 1px 0; }\n  .skm-detailGrid dt { margin-top: 5px; }\n  .skm-fieldRow { flex-direction: column; }\n  .skm-modal { max-height: 88vh; }\n}\n";
+    var CSS_TEXT = "/* dsh-skills-tools — Settings -> Skills panel.\n   Flat setting rows (no card frames), token-driven colours, light/dark safe. */\n.skm-root, .skm-modal {\n  --skm-fs-title: 18px;\n  --skm-fs-body: 14px;\n  --skm-fs-desc: 13px;\n  --skm-fs-caption: 12px;\n  --skm-fs-tiny: 11px;\n  --skm-fs-tag: 10px;\n  --skm-line-title: 26px;\n  --skm-line-body: 20px;\n  --skm-line-desc: 18px;\n  --skm-gap: 12px;\n  --skm-gap-sm: 8px;\n  --skm-gap-xs: 6px;\n  --skm-hairline: .5px;\n  --skm-focus: var(--dsw-focus-ring-width, 2px) solid var(--dsw-focus-ring-color, var(--dsw-alias-state-business-primary));\n  color: var(--dsw-alias-label-primary);\n  font-family: var(--dsw-font-family, inherit);\n  font-size: var(--skm-fs-body);\n  line-height: var(--skm-line-body);\n}\n.skm-root *, .skm-modal *, .skm-root *::before, .skm-modal *::before { box-sizing: border-box; }\n.skm-root { display: flex; flex-direction: column; gap: var(--skm-gap); max-width: 820px; padding-top: 16px; }\n\n.skm-headRow { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--skm-gap); flex-wrap: wrap; }\n.skm-headText { display: flex; flex-direction: column; gap: 2px; min-width: 0; }\n.skm-heading { margin: 0; font-size: var(--skm-fs-title); font-weight: 600; line-height: var(--skm-line-title); }\n.skm-intro { margin: 0; color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-desc); line-height: var(--skm-line-desc); }\n.skm-headActions { display: flex; align-items: center; gap: var(--skm-gap-sm); flex: none; }\n.skm-summary { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-caption); }\n.skm-summary strong { color: var(--dsw-alias-label-secondary); font-weight: 600; }\n\n.skm-toolbar { display: flex; align-items: center; justify-content: space-between; gap: var(--skm-gap-sm); flex-wrap: wrap; }\n.skm-search { display: flex; align-items: center; gap: 6px; flex: 1 1 220px; max-width: 320px; height: 30px; padding: 0 8px; border: var(--skm-hairline) solid var(--dsw-alias-border-l1); border-radius: 7px; background: var(--dsw-alias-bg-layer-1); color: var(--dsw-alias-label-tertiary); transition: border-color 120ms ease; }\n.skm-search:focus-within { border-color: var(--dsw-alias-label-caption); }\n.skm-search input { flex: 1 1 auto; min-width: 0; height: 100%; padding: 0; border: 0; outline: 0; background: transparent; color: var(--dsw-alias-label-primary); font: inherit; font-size: var(--skm-fs-desc); }\n.skm-search input::placeholder { color: var(--dsw-alias-label-tertiary); }\n.skm-toolbarEnd { display: flex; align-items: center; gap: var(--skm-gap-sm); flex-wrap: wrap; }\n.skm-seg { display: inline-flex; align-items: center; padding: 2px; border-radius: 7px; background: var(--dsw-alias-bg-layer-1); border: var(--skm-hairline) solid var(--dsw-alias-border-l1); }\n.skm-segBtn { height: 24px; padding: 0 10px; border: 0; border-radius: 5px; background: none; color: var(--dsw-alias-label-tertiary); font: inherit; font-size: var(--skm-fs-caption); cursor: pointer; }\n.skm-segBtn[data-active=\"true\"] { background: var(--dsw-alias-interactive-bg-hover); color: var(--dsw-alias-label-primary); }\n.skm-segBtn:hover { color: var(--dsw-alias-label-primary); }\n\n.skm-btn { display: inline-flex; align-items: center; justify-content: center; gap: 5px; height: 30px; padding: 0 12px; border-radius: 7px; border: var(--skm-hairline) solid transparent; font: inherit; font-size: var(--skm-fs-caption); font-weight: 500; line-height: 1; cursor: pointer; white-space: nowrap; transition: background 120ms ease, border-color 120ms ease, color 120ms ease; }\n.skm-btn:focus-visible { outline: var(--skm-focus); outline-offset: 1px; }\n.skm-btn[disabled] { opacity: .5; cursor: not-allowed; }\n.skm-btn--primary { background: var(--dsw-alias-state-business-primary); color: var(--dsw-alias-label-inverse, #fff); }\n.skm-btn--primary:hover:not([disabled]) { background: var(--dsw-alias-state-business-primary-hover, var(--dsw-alias-state-business-primary)); opacity: .92; }\n.skm-btn--outline { background: transparent; border-color: var(--dsw-alias-border-l1); color: var(--dsw-alias-label-secondary); }\n.skm-btn--outline:hover:not([disabled]) { background: var(--dsw-alias-interactive-bg-hover); color: var(--dsw-alias-label-primary); }\n.skm-btn--ghost { background: none; color: var(--dsw-alias-label-tertiary); }\n.skm-btn--ghost:hover:not([disabled]) { background: var(--dsw-alias-interactive-bg-hover); color: var(--dsw-alias-label-primary); }\n.skm-btn--danger { background: none; color: var(--dsw-alias-state-error-primary); border-color: var(--dsw-alias-border-l1); }\n.skm-btn--danger:hover:not([disabled]) { background: var(--dsw-alias-state-error-primary); color: #fff; border-color: transparent; }\n.skm-ibtn { width: 28px; height: 28px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: 6px; background: none; color: var(--dsw-alias-label-caption); cursor: pointer; }\n.skm-ibtn:hover:not([disabled]) { background: var(--dsw-alias-interactive-bg-hover); color: var(--dsw-alias-label-primary); }\n.skm-ibtn[disabled] { opacity: .4; cursor: not-allowed; }\n.skm-ibtn[data-danger=\"true\"]:hover:not([disabled]) { color: var(--dsw-alias-state-error-primary); }\n\n.skm-banner { display: flex; gap: 8px; align-items: flex-start; padding: 9px 11px; border-radius: 7px; background: var(--dsw-alias-bg-layer-1); border: var(--skm-hairline) solid var(--dsw-alias-border-l1); color: var(--dsw-alias-label-secondary); font-size: var(--skm-fs-caption); line-height: var(--skm-line-desc); }\n.skm-banner[data-tone=\"error\"] { color: var(--dsw-alias-state-error-primary); }\n.skm-banner[data-tone=\"warn\"] { color: var(--dsw-alias-label-secondary); }\n.skm-banner svg { flex: none; margin-top: 1px; }\n\n.skm-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }\n.skm-row { border-bottom: var(--skm-hairline) solid var(--dsw-alias-border-l1); }\n.skm-list > .skm-row:last-child { border-bottom: 0; }\n.skm-rowHead { display: flex; align-items: flex-start; gap: 10px; padding: 13px 0; }\n.skm-rowMain { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px; padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }\n.skm-nameRow { display: flex; align-items: center; gap: 6px; min-width: 0; flex-wrap: wrap; }\n.skm-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--skm-fs-body); font-weight: 500; line-height: var(--skm-line-body); }\n.skm-row[data-off=\"true\"] .skm-name { color: var(--dsw-alias-label-secondary); }\n.skm-desc { margin: 0; color: var(--dsw-alias-label-caption); font-size: var(--skm-fs-caption); line-height: var(--skm-line-desc); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }\n.skm-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-tiny); line-height: 16px; }\n.skm-meta code { font-family: var(--dsw-font-family-mono, ui-monospace, SFMono-Regular, Menlo, monospace); font-size: var(--skm-fs-tiny); }\n.skm-tag { display: inline-flex; align-items: center; height: 18px; padding: 0 6px; border-radius: 4px; border: var(--skm-hairline) solid var(--dsw-alias-border-l1); color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-tag); line-height: 1; white-space: nowrap; }\n.skm-tag[data-tone=\"accent\"] { color: var(--dsw-alias-state-business-primary); border-color: currentColor; }\n.skm-tag[data-tone=\"warn\"] { color: var(--dsw-alias-state-warning-primary, #c98a00); border-color: currentColor; }\n.skm-tag[data-tone=\"error\"] { color: var(--dsw-alias-state-error-primary); border-color: currentColor; }\n.skm-rowActions { flex: none; display: flex; align-items: center; gap: 2px; padding-top: 1px; }\n.skm-chevron { display: inline-flex; color: var(--dsw-alias-label-tertiary); transition: transform 120ms ease; }\n.skm-chevron[data-open=\"true\"] { transform: rotate(90deg); }\n\n.skm-switch { position: relative; flex: none; width: 32px; height: 18px; margin-top: 2px; padding: 0; border: 0; border-radius: 999px; background: var(--dsw-alias-border-l2, var(--dsw-alias-border-l1)); cursor: pointer; transition: background 150ms ease; }\n.skm-switch[aria-checked=\"true\"] { background: var(--dsw-alias-state-business-primary); }\n.skm-switch::after { content: \"\"; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.18); transition: transform 150ms ease; }\n.skm-switch[aria-checked=\"true\"]::after { transform: translateX(14px); }\n.skm-switch:focus-visible { outline: var(--skm-focus); outline-offset: 2px; }\n.skm-switch[disabled] { opacity: .5; cursor: not-allowed; }\n\n.skm-detail { display: flex; flex-direction: column; gap: 10px; margin: 2px 0 14px; padding: 12px; border-radius: 8px; background: var(--dsw-alias-bg-layer-1); }\n.skm-detailGrid { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 5px 10px; font-size: var(--skm-fs-caption); line-height: var(--skm-line-desc); }\n.skm-detailGrid dt { color: var(--dsw-alias-label-tertiary); }\n.skm-detailGrid dd { margin: 0; min-width: 0; color: var(--dsw-alias-label-secondary); overflow-wrap: anywhere; }\n.skm-detailGrid code { font-family: var(--dsw-font-family-mono, ui-monospace, SFMono-Regular, Menlo, monospace); font-size: var(--skm-fs-tiny); }\n.skm-detailActions { display: flex; align-items: center; gap: var(--skm-gap-sm); flex-wrap: wrap; }\n.skm-detailActions .skm-grow { flex: 1 1 auto; }\n.skm-codeWrap { position: relative; }\n.skm-code { margin: 0; max-height: 300px; overflow: auto; padding: 10px 12px; border-radius: 7px; border: var(--skm-hairline) solid var(--dsw-alias-border-l1); background: var(--dsw-alias-bg-layer-2, var(--dsw-alias-bg-layer-1)); color: var(--dsw-alias-label-secondary); font-family: var(--dsw-font-family-mono, ui-monospace, SFMono-Regular, Menlo, monospace); font-size: var(--skm-fs-tiny); line-height: 1.55; white-space: pre-wrap; word-break: break-word; }\n.skm-codeNote { margin: 0; color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-tiny); }\n.skm-inlineErr { margin: 0; color: var(--dsw-alias-state-error-primary); font-size: var(--skm-fs-caption); }\n\n.skm-empty { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 40px 16px; color: var(--dsw-alias-label-tertiary); text-align: center; }\n.skm-emptyTitle { color: var(--dsw-alias-label-secondary); font-size: var(--skm-fs-body); font-weight: 500; }\n.skm-emptyText { max-width: 420px; font-size: var(--skm-fs-caption); line-height: var(--skm-line-desc); }\n.skm-detailsSummary { cursor: pointer; color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-caption); }\n.skm-events { display: flex; flex-direction: column; gap: 4px; margin: 6px 0 0; padding: 10px 12px; border-radius: 7px; background: var(--dsw-alias-bg-layer-1); font-size: var(--skm-fs-tiny); line-height: 16px; color: var(--dsw-alias-label-tertiary); max-height: 220px; overflow: auto; }\n.skm-events div { display: flex; gap: 8px; }\n.skm-events time { flex: none; color: var(--dsw-alias-label-tertiary); font-variant-numeric: tabular-nums; }\n\n.skm-spin { animation: skm-spin 900ms linear infinite; }\n@keyframes skm-spin { to { transform: rotate(360deg); } }\n.skm-loading { display: flex; align-items: center; gap: 6px; padding: 24px 0; color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-caption); }\n\n/* ── Modal (portalled by React into the overlay root) ─────────────────── */\n.skm-overlay { position: fixed; inset: 0; z-index: 60; display: flex; align-items: flex-start; justify-content: center; padding: 8vh 16px 24px; background: rgba(0,0,0,.38); }\n.skm-modal { width: min(640px, 100%); max-height: 82vh; display: flex; flex-direction: column; border-radius: 12px; background: var(--dsw-alias-bg-layer-0, #fff); border: var(--skm-hairline) solid var(--dsw-alias-border-l1); box-shadow: 0 18px 48px rgba(0,0,0,.28); overflow: hidden; }\n.skm-modal[data-width=\"wide\"] { width: min(780px, 100%); }\n.skm-modalHead { display: flex; align-items: flex-start; gap: var(--skm-gap); padding: 16px 18px 10px; }\n.skm-modalTitle { margin: 0; flex: 1 1 auto; font-size: var(--skm-fs-body); font-weight: 600; line-height: var(--skm-line-body); }\n.skm-modalDesc { margin: 4px 0 0; color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-caption); line-height: var(--skm-line-desc); }\n.skm-modalBody { padding: 4px 18px 10px; overflow: auto; display: flex; flex-direction: column; gap: 10px; }\n.skm-modalFooter { display: flex; align-items: center; justify-content: flex-end; gap: var(--skm-gap-sm); padding: 12px 18px 16px; border-top: var(--skm-hairline) solid var(--dsw-alias-border-l1); }\n.skm-modalFooter .skm-grow { flex: 1 1 auto; }\n\n.skm-field { display: flex; flex-direction: column; gap: 5px; }\n.skm-fieldLabel { color: var(--dsw-alias-label-secondary); font-size: var(--skm-fs-caption); font-weight: 500; }\n.skm-input { width: 100%; height: 32px; padding: 0 10px; border: var(--skm-hairline) solid var(--dsw-alias-border-l1); border-radius: 7px; background: var(--dsw-alias-bg-layer-1); color: var(--dsw-alias-label-primary); font: inherit; font-size: var(--skm-fs-desc); outline: 0; }\n.skm-input:focus { border-color: var(--dsw-alias-state-business-primary); }\n.skm-hint { margin: 0; color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-tiny); line-height: 16px; }\n.skm-fieldRow { display: flex; gap: var(--skm-gap-sm); }\n.skm-fieldRow .skm-field { flex: 1 1 0; min-width: 0; }\n\n.skm-scanHead { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; color: var(--dsw-alias-label-secondary); font-size: var(--skm-fs-caption); }\n.skm-scanList { display: flex; flex-direction: column; gap: 2px; max-height: 280px; overflow: auto; margin: 0 -4px; padding: 0 4px; }\n.skm-scanRow { display: flex; align-items: flex-start; gap: 8px; padding: 7px 4px; border-radius: 6px; }\n.skm-scanRow:hover { background: var(--dsw-alias-interactive-bg-hover); }\n.skm-scanRow input[type=\"checkbox\"] { margin: 3px 0 0; accent-color: var(--dsw-alias-state-business-primary); }\n.skm-scanMain { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 1px; }\n.skm-scanName { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: var(--skm-fs-caption); font-weight: 500; }\n.skm-scanPath { color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-tiny); overflow-wrap: anywhere; }\n.skm-scanNameInput { width: 150px; height: 22px; padding: 0 6px; border: var(--skm-hairline) solid var(--dsw-alias-border-l1); border-radius: 5px; background: var(--dsw-alias-bg-layer-0, transparent); color: var(--dsw-alias-label-primary); font: inherit; font-size: var(--skm-fs-tiny); }\n.skm-scanRow[data-invalid=\"true\"] { opacity: .62; }\n.skm-scanRow[data-invalid=\"true\"] .skm-scanName { text-decoration: line-through; }\n@media (max-width: 640px) {\n  .skm-root { padding-top: 10px; }\n  .skm-headActions { width: 100%; justify-content: flex-end; }\n  .skm-search { max-width: none; }\n  .skm-detailGrid { grid-template-columns: minmax(0, 1fr); gap: 1px 0; }\n  .skm-detailGrid dt { margin-top: 5px; }\n  .skm-fieldRow { flex-direction: column; }\n  .skm-modal { max-height: 88vh; }\n}\n\n/* ── Repository groups (v1.1) ─────────────────────────────────────────── */\n.skm-repos { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }\n.skm-repo { border: var(--skm-hairline) solid var(--dsw-alias-border-l1); border-radius: 10px; background: var(--dsw-alias-bg-layer-1, transparent); overflow: hidden; }\n.skm-repoHead { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: var(--dsw-alias-bg-layer-2, transparent); }\n.skm-repo[data-open=\"true\"] .skm-repoHead { border-bottom: var(--skm-hairline) solid var(--dsw-alias-border-l1); }\n.skm-repoToggle { flex: none; transition: transform 120ms ease; }\n.skm-repoToggle[data-open=\"true\"] { transform: rotate(90deg); }\n.skm-repoIcon { display: inline-flex; color: var(--dsw-alias-label-caption); }\n.skm-repoTitle { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px; }\n.skm-repoNameRow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 0; }\n.skm-repoName { max-width: 48%; overflow: hidden; font-size: 13px; font-weight: 600; color: var(--dsw-alias-label-primary); text-overflow: ellipsis; white-space: nowrap; }\n.skm-repoLink { display: inline-flex; padding: 2px; border-radius: 4px; color: var(--dsw-alias-label-caption); }\n.skm-repoLink:hover { color: var(--dsw-alias-state-business-primary); background: var(--dsw-alias-interactive-bg-hover); }\n.skm-repoBadges { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }\n.skm-repoMeta { display: flex; align-items: center; gap: 10px; min-width: 0; font-size: 12px; color: var(--dsw-alias-label-caption); }\n.skm-repoUrl { max-width: 100%; overflow: hidden; opacity: .85; text-overflow: ellipsis; white-space: nowrap; }\n.skm-repoActions { display: flex; align-items: center; gap: 6px; flex: none; }\n.skm-repoBody { padding: 0 12px; }\n.skm-repoBody .skm-list { padding: 2px 0; }\n.skm-repoBody .skm-rowHead { padding: 11px 0; }\n.skm-chevronBtn { transition: transform 120ms ease; }\n.skm-chevronBtn[data-open=\"true\"] { transform: rotate(90deg); }\n.skm-switch[data-mixed=\"true\"] { background: var(--dsw-alias-state-warn-primary, var(--dsw-alias-state-business-primary)); }\n.skm-switch[data-mixed=\"true\"]::after { top: 8px; left: 2px; width: 10px; height: 2px; border-radius: 1px; transform: translateX(9px); }\n.skm-scanRow[data-disabled=\"true\"] { opacity: .55; }\n.skm-scanRow[data-disabled=\"true\"] .skm-scanName { text-decoration: none; }\n";
 
     function cx() {
       var out = [];
@@ -148,7 +148,28 @@ window.__ModuleLoader__.load({
         emptyFiltered: "当前筛选下没有技能",
         checkedAt: "上次检查 {time}",
         noCredential: "如果克隆失败，请先在本机完成该仓库的 git 认证。",
-        scanAgain: "重新扫描"
+        scanAgain: "重新扫描",
+        repoLinkOpen: "打开仓库",
+        repoToggleLabel: "启用或停用该仓库的全部技能",
+        repoStats: "{enabled}/{imported} 已启用",
+        repoAvailable: "共 {available} 个技能，已导入 {imported}",
+        repoAvailableShort: "可导入 {count} 个",
+        repoAllImported: "全部已导入",
+        importMore: "导入更多",
+        repoScanning: "正在扫描仓库…",
+        repoInspectTitle: "从仓库导入更多技能",
+        repoInspectDesc: "快照中还有未导入的技能，勾选后导入；已导入的技能会置灰。",
+        repoInspectEmpty: "该仓库的技能已全部导入",
+        alreadyImported: "已导入",
+        selectAll: "全选",
+        clearSelection: "清空",
+        importSelected: "导入所选（{count}）",
+        importResult: "已导入 {installed} 个技能，跳过 {skipped} 个",
+        repoSkillsCount: "{count} 个技能",
+        repoEmptyFiltered: "此仓库下没有匹配的技能",
+        repoLocalHint: "本地目录",
+        skillContent: "SKILL.md 内容",
+        contentTruncated: "内容过长，仅显示前 64 KiB"
       },
       en: {
         nav: "Skills",
@@ -251,7 +272,28 @@ window.__ModuleLoader__.load({
         emptyFiltered: "No skills match this filter",
         checkedAt: "Checked {time}",
         noCredential: "If cloning fails, complete git authentication for this repository on this machine first.",
-        scanAgain: "Scan again"
+        scanAgain: "Scan again",
+        repoLinkOpen: "Open repository",
+        repoToggleLabel: "Enable or disable every skill in this repository",
+        repoStats: "{enabled}/{imported} enabled",
+        repoAvailable: "{available} skills in total, {imported} imported",
+        repoAvailableShort: "{count} available",
+        repoAllImported: "All imported",
+        importMore: "Import more",
+        repoScanning: "Scanning repository…",
+        repoInspectTitle: "Import more skills from this repository",
+        repoInspectDesc: "The snapshot still contains skills you have not imported. Select them below; imported skills are dimmed.",
+        repoInspectEmpty: "Every skill in this repository is already imported",
+        alreadyImported: "Imported",
+        selectAll: "Select all",
+        clearSelection: "Clear",
+        importSelected: "Import selected ({count})",
+        importResult: "Imported {installed} skills, skipped {skipped}",
+        repoSkillsCount: "{count} skills",
+        repoEmptyFiltered: "No skills match in this repository",
+        repoLocalHint: "Local folder",
+        skillContent: "SKILL.md content",
+        contentTruncated: "Content is too long; showing the first 64 KiB"
       }
     };
 
@@ -365,6 +407,7 @@ window.__ModuleLoader__.load({
         title: props.title || props.label,
         disabled: !!props.disabled,
         className: "skm-switch",
+        "data-mixed": props.mixed ? "true" : "false",
         onClick: function (event) {
           event.stopPropagation();
           if (typeof props.onChange === "function") props.onChange(!checked);
@@ -458,6 +501,38 @@ window.__ModuleLoader__.load({
     function hostOf(url) {
       if (typeof url !== "string" || url === "") return "";
       try { return new URL(url).host || url } catch (error) { return url }
+    }
+
+    function repoLabel(url, kind) {
+      var text = String(url || "");
+      if (kind === "local") {
+        var local = text.split(/[\\/]+/).filter(Boolean);
+        return local.length > 0 ? local[local.length - 1] : text;
+      }
+      var clean = text.replace(/[\/]+$/, "").replace(/\.git$/, "");
+      if (/^https?:\/\//i.test(clean)) {
+        try {
+          var segments = new URL(clean).pathname.replace(/\/+$/, "").split("/").filter(Boolean);
+          if (segments.length > 0) return segments.slice(-2).join("/");
+        } catch (error) {}
+      }
+      var scp = clean.match(/^[^@]+@[^:]+:(.+)$/);
+      if (scp) {
+        var scpParts = scp[1].split("/").filter(Boolean);
+        if (scpParts.length > 0) return scpParts.slice(-2).join("/");
+      }
+      var plain = clean.split(/[\\/]/).filter(Boolean);
+      return plain.length > 0 ? plain.slice(-2).join("/") : clean;
+    }
+
+    function repoWebUrl(url) {
+      var text = String(url || "");
+      if (/^https?:\/\//i.test(text)) return text.replace(/\.git$/, "");
+      var scp = text.match(/^git@([^:]+):(.+?)(?:\.git)?$/);
+      if (scp) return "https://" + scp[1] + "/" + scp[2];
+      var ssh = text.match(/^ssh:\/\/git@([^/]+)\/(.+?)(?:\.git)?$/);
+      if (ssh) return "https://" + ssh[1] + "/" + ssh[2];
+      return "";
     }
 
     function shortTime(value) {
@@ -714,6 +789,121 @@ window.__ModuleLoader__.load({
       }, h("p", { className: "skm-hint", style: { fontSize: "13px", lineHeight: "20px" } }, props.message));
     }
 
+    // ── Repository import dialog ─────────────────────────────────────────
+    function RepoImportDialog(props) {
+      var t = props.t;
+      var repo = props.repo;
+      var _data = useState(null);
+      var data = _data[0], setData = _data[1];
+      var _busy = useState(true);
+      var busy = _busy[0], setBusy = _busy[1];
+      var _error = useState("");
+      var error = _error[0], setError = _error[1];
+      var _selected = useState({});
+      var selected = _selected[0], setSelected = _selected[1];
+
+      useEffect(function () {
+        var alive = true;
+        setBusy(true);
+        apiPost("/repos/inspect", { repoId: repo.id }).then(function (result) {
+          if (!alive) return;
+          setData(result);
+          setBusy(false);
+        }).catch(function (failure) {
+          if (!alive) return;
+          setError(errorMessage(failure));
+          setBusy(false);
+        });
+        return function () { alive = false };
+      }, [repo.id]);
+
+      var candidates = data ? data.skills.filter(function (item) { return item.valid && !item.imported }) : [];
+      var chosen = candidates.filter(function (item) { return selected[item.relPath] });
+
+      function setAll(on) {
+        var next = {};
+        if (on) for (var i = 0; i < candidates.length; i += 1) next[candidates[i].relPath] = true;
+        setSelected(next);
+      }
+
+      function submit() {
+        if (chosen.length === 0 || busy) return;
+        setBusy(true);
+        apiPost("/repos/import", {
+          repoId: repo.id,
+          skills: chosen.map(function (item) { return { relPath: item.relPath, name: item.suggestedName || item.name } })
+        }).then(function (result) {
+          props.onDone(result);
+        }).catch(function (failure) {
+          setError(errorMessage(failure));
+          setBusy(false);
+        });
+      }
+
+      var rows = [];
+      for (var i = 0; i < (data ? data.skills.length : 0); i += 1) {
+        (function (item) {
+          var disabled = item.imported || !item.valid;
+          var checked = !!selected[item.relPath];
+          rows.push(h("label", { key: item.relPath, className: "skm-scanRow", "data-disabled": disabled ? "true" : "false" },
+            h("input", {
+              type: "checkbox",
+              checked: checked,
+              disabled: disabled || busy,
+              onChange: function () {
+                setSelected(function (previous) {
+                  var next = Object.assign({}, previous);
+                  if (next[item.relPath]) delete next[item.relPath]; else next[item.relPath] = true;
+                  return next;
+                });
+              }
+            }),
+            h("div", { className: "skm-scanMain" },
+              h("div", { className: "skm-scanName" },
+                h("span", {}, item.name || item.suggestedName),
+                item.imported ? h(Tag, { tone: "outline" }, t("alreadyImported")) : null,
+                !item.valid ? h(Tag, { tone: "error" }, t("badgeError")) : null,
+                item.hidden ? h(Tag, { tone: "warn" }, "hidden") : null),
+              item.description ? h("div", { className: "skm-desc" }, item.description) : null,
+              h("div", { className: "skm-scanPath" }, h("code", {}, item.relPath)),
+              !item.valid && item.reason ? h("div", { className: "skm-inlineErr" }, item.reason) : null)));
+        })(data.skills[i]);
+      }
+
+      var body;
+      if (busy && !data) {
+        body = h("div", { className: "skm-loading" }, h(Spinner, {}), t("repoScanning"));
+      } else if (error && !data) {
+        body = h("div", {}, h("p", { className: "skm-inlineErr", role: "alert" }, error));
+      } else {
+        body = h("div", {},
+          h("div", { className: "skm-scanHead" },
+            h("span", {}, t("repoAvailable", { available: data ? data.available : 0, imported: data ? data.imported : 0 })),
+            data && data.repo ? h("code", {}, String(data.repo.ref || "HEAD").slice(0, 24)) : null,
+            data && data.repo && data.repo.shortCommit ? h("code", {}, data.repo.shortCommit) : null,
+            h("div", { className: "skm-grow" }),
+            h(Button, { variant: "ghost", disabled: busy || candidates.length === 0, onClick: function () { setAll(true) } }, t("selectAll")),
+            h(Button, { variant: "ghost", disabled: busy || candidates.length === 0, onClick: function () { setAll(false) } }, t("clearSelection"))),
+          candidates.length === 0 ? h("p", { className: "skm-hint" }, t("repoInspectEmpty")) : h("div", { className: "skm-scanList" }, rows),
+          data && data.truncated ? h("p", { className: "skm-codeNote" }, "…") : null,
+          error ? h("p", { className: "skm-inlineErr", role: "alert" }, error) : null);
+      }
+
+      return h(Modal, {
+        open: true,
+        onClose: busy ? function () {} : props.onClose,
+        title: t("repoInspectTitle"),
+        description: t("repoInspectDesc"),
+        closeLabel: t("close"),
+        wide: true,
+        footer: [
+          h("div", { key: "grow", className: "skm-grow" }),
+          h(Button, { key: "cancel", variant: "ghost", onClick: props.onClose, disabled: busy }, t("cancel")),
+          h(Button, { key: "ok", variant: "primary", onClick: submit, disabled: busy || chosen.length === 0 }, busy ? t("repoScanning") : t("importSelected", { count: chosen.length }))
+        ]
+      }, body);
+    }
+
     // ── Section ───────────────────────────────────────────────────────────
     function SkillsSection(props) {
       var t = props.t;
@@ -743,6 +933,10 @@ window.__ModuleLoader__.load({
       var eventsOpen = _eventsOpen[0], setEventsOpen = _eventsOpen[1];
       var _copied = useState("");
       var copied = _copied[0], setCopied = _copied[1];
+      var _collapsedRepos = useState({});
+      var collapsedRepos = _collapsedRepos[0], setCollapsedRepos = _collapsedRepos[1];
+      var _repoDialog = useState(null);
+      var repoDialog = _repoDialog[0], setRepoDialog = _repoDialog[1];
 
       var load = useCallback(function (silent) {
         return apiGet("/state").then(function (next) {
@@ -870,6 +1064,29 @@ window.__ModuleLoader__.load({
         });
       }
 
+      function toggleRepoOpen(repoId) {
+        setCollapsedRepos(function (previous) {
+          var next = Object.assign({}, previous);
+          if (next[repoId]) delete next[repoId]; else next[repoId] = true;
+          return next;
+        });
+      }
+
+      function toggleRepo(repo) {
+        var key = "__repo__" + repo.id;
+        if (busy[key]) return;
+        var allOn = repo.skills > 0 && repo.enabled === repo.skills;
+        var nextEnabled = !allOn;
+        setBusyFor(key, "toggle");
+        apiPost("/repos/toggle", { repoId: repo.id, enabled: nextEnabled }).then(function (result) {
+          setAlert({ tone: "ok", text: t("alertBulk", { count: result.changed || 0 }) });
+          return load(true);
+        }).catch(function (failure) {
+          setAlert({ tone: "error", text: t("actionFailed", { message: errorMessage(failure) }) });
+          return load(true);
+        }).then(function () { setBusyFor(key, null) });
+      }
+
       function expandSkill(skill) {
         var open = !expanded[skill.name];
         setExpanded(function (previous) {
@@ -922,6 +1139,37 @@ window.__ModuleLoader__.load({
           return haystack.indexOf(needle) >= 0;
         });
       }, [skills, query, filter]);
+
+      var repos = data ? data.repos || [] : [];
+      var groups = useMemo(function () {
+        var byId = new Map();
+        for (var r = 0; r < repos.length; r += 1) byId.set(repos[r].id, repos[r]);
+        var buckets = new Map();
+        for (var i = 0; i < filtered.length; i += 1) {
+          var skill = filtered[i];
+          var id = skill.repo ? skill.repo.id : "__orphan__";
+          if (!buckets.has(id)) buckets.set(id, []);
+          buckets.get(id).push(skill);
+        }
+        var list = [];
+        buckets.forEach(function (items, id) {
+          var repo = byId.get(id) || (items[0] && items[0].repo) || { id: id, url: "", kind: "local", skills: items.length, enabled: 0 };
+          items.sort(function (a, b) {
+            if (a.enabled !== b.enabled) return a.enabled ? -1 : 1;
+            return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
+          });
+          list.push({ id: id, repo: repo, skills: items });
+        });
+        list.sort(function (a, b) {
+          var ea = (a.repo.enabled || 0) > 0 ? 0 : 1;
+          var eb = (b.repo.enabled || 0) > 0 ? 0 : 1;
+          if (ea !== eb) return ea - eb;
+          var la = repoLabel(a.repo.url, a.repo.kind).toLowerCase();
+          var lb = repoLabel(b.repo.url, b.repo.kind).toLowerCase();
+          return la < lb ? -1 : la > lb ? 1 : 0;
+        });
+        return list;
+      }, [filtered, repos]);
 
       function renderDetail(skill) {
         var entry = content[skill.name];
@@ -1002,8 +1250,84 @@ window.__ModuleLoader__.load({
               h("span", { className: "skm-desc" }, skill.description || ""),
               h("span", { className: "skm-meta" }, meta)),
             h("div", { className: "skm-rowActions" },
-              h("span", { className: "skm-chevron", "data-open": open ? "true" : "false" }, h(Icon, { name: "chevron", size: 15 })))),
+              h("button", {
+                type: "button",
+                className: "skm-ibtn skm-chevronBtn",
+                "data-open": open ? "true" : "false",
+                "aria-expanded": open,
+                "aria-label": t(open ? "collapse" : "expand") + " " + skill.name,
+                title: t(open ? "collapse" : "expand"),
+                onClick: function (event) { event.stopPropagation(); expandSkill(skill) }
+              }, h(Icon, { name: "chevron", size: 15 })))),
           open ? renderDetail(skill) : null);
+      }
+
+      function renderRepoGroup(group) {
+        var repo = group.repo || {};
+        var collapsed = !!collapsedRepos[repo.id];
+        var total = typeof repo.skills === "number" ? repo.skills : group.skills.length;
+        var enabledCount = typeof repo.enabled === "number" ? repo.enabled : group.skills.filter(function (item) { return item.enabled }).length;
+        var available = repo.available || null;
+        var allOn = total > 0 && enabledCount === total;
+        var mixed = enabledCount > 0 && !allOn;
+        var label = repoLabel(repo.url, repo.kind);
+        var web = repoWebUrl(repo.url);
+        var repoKey = "__repo__" + repo.id;
+        var badges = [];
+        if (repo.ref && repo.kind !== "local") badges.push(h(Tag, { key: "ref" }, repo.ref));
+        if (repo.shortCommit) badges.push(h("code", { key: "commit" }, repo.shortCommit));
+        if (repo.updateAvailable) badges.push(h(Tag, { key: "update", tone: "warn" }, t("badgeUpdate")));
+        if (available && available > total) badges.push(h(Tag, { key: "more", tone: "accent" }, t("repoAvailableShort", { count: available - total })));
+        var countText = available
+          ? t("repoAvailable", { available: available, imported: total })
+          : t("repoStats", { enabled: enabledCount, imported: total });
+        return h("section", { key: repo.id, className: "skm-repo", "data-open": collapsed ? "false" : "true" },
+          h("header", { className: "skm-repoHead" },
+            h("button", {
+              type: "button",
+              className: "skm-ibtn skm-repoToggle",
+              "data-open": collapsed ? "false" : "true",
+              "aria-expanded": !collapsed,
+              "aria-label": label,
+              title: t(collapsed ? "expand" : "collapse"),
+              onClick: function () { toggleRepoOpen(repo.id) }
+            }, h(Icon, { name: "chevron", size: 15 })),
+            h("span", { className: "skm-repoIcon", "aria-hidden": "true" }, h(Icon, { name: repo.kind === "local" ? "folder" : "box", size: 16 })),
+            h("div", { className: "skm-repoTitle" },
+              h("div", { className: "skm-repoNameRow" },
+                h("span", { className: "skm-repoName" }, label),
+                web ? h("a", {
+                  key: "link",
+                  className: "skm-repoLink",
+                  href: web,
+                  target: "_blank",
+                  rel: "noreferrer noopener",
+                  title: t("repoLinkOpen"),
+                  "aria-label": t("repoLinkOpen")
+                }, h(Icon, { name: "external", size: 13 })) : null,
+                h("span", { className: "skm-repoBadges" }, badges)),
+              h("div", { className: "skm-repoMeta" },
+                h("span", {}, countText),
+                h("span", { className: "skm-repoUrl", title: repo.url }, repo.url))),
+            h("div", { className: "skm-repoActions" },
+              h(Switch, {
+                checked: allOn,
+                mixed: mixed,
+                disabled: !!busy[repoKey],
+                label: t("repoToggleLabel"),
+                title: t("repoToggleLabel"),
+                onChange: function () { toggleRepo(repo) }
+              }),
+              h(Button, {
+                variant: "ghost",
+                icon: "plus",
+                disabled: !!busy[repoKey],
+                onClick: function () { setRepoDialog(repo) }
+              }, t("importMore")))),
+          collapsed ? null : h("div", { className: "skm-repoBody" },
+            group.skills.length === 0
+              ? h("p", { className: "skm-hint" }, t("repoEmptyFiltered"))
+              : h("ul", { className: "skm-list" }, group.skills.map(renderRow))));
       }
 
       var header = h("div", { className: "skm-headRow" },
@@ -1099,19 +1423,8 @@ window.__ModuleLoader__.load({
           h(Icon, { name: "search", size: 24 }),
           h("div", { className: "skm-emptyTitle" }, t("noMatch")));
       } else {
-        list = h("ul", { className: "skm-list" }, filtered.map(renderRow));
+        list = h("div", { className: "skm-repos" }, groups.map(renderRepoGroup));
       }
-
-      var repos = data.repos || [];
-      var repoBlock = repos.length > 0 ? h("details", { className: "skm-repos" },
-        h("summary", { className: "skm-detailsSummary" }, t("reposTitle") + " " + repos.length),
-        h("div", { className: "skm-events" }, repos.map(function (repo) {
-          return h("div", { key: repo.id },
-            h("span", { style: { flex: "1 1 auto", overflowWrap: "anywhere" } }, repo.url),
-            h("span", {}, (repo.ref || "HEAD") + " · " + (repo.shortCommit || t("sourceLocal"))),
-            h("span", {}, repo.enabled + "/" + repo.skills),
-            repo.updateAvailable ? h(Tag, { tone: "warn" }, t("updateAvailable")) : null);
-        }))) : null;
 
       var events = data.events || [];
       var eventsBlock = eventsOpen ? h("div", { className: "skm-events" },
@@ -1128,7 +1441,6 @@ window.__ModuleLoader__.load({
         notice,
         toolbar,
         list,
-        repoBlock,
         eventsBlock,
         h("p", { className: "skm-hint" }, t("pathHint", { path: data.paths ? data.paths.manager : "" })),
         importOpen ? h(ImportDialog, {
@@ -1150,6 +1462,19 @@ window.__ModuleLoader__.load({
           confirmLabel: t("confirmRemove"),
           onClose: function () { setConfirm(null) },
           onConfirm: confirm.onConfirm
+        }) : null,
+        repoDialog ? h(RepoImportDialog, {
+          t: t,
+          repo: repoDialog,
+          onClose: function () { setRepoDialog(null) },
+          onDone: function (result) {
+            setRepoDialog(null);
+            setAlert({
+              tone: result.skipped && result.skipped.length > 0 ? "warn" : "ok",
+              text: t("importResult", { installed: (result.installed || []).length, skipped: (result.skipped || []).length })
+            });
+            load(true);
+          }
         }) : null);
     }
 

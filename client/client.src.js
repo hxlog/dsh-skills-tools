@@ -148,7 +148,28 @@ window.__ModuleLoader__.load({
         emptyFiltered: "当前筛选下没有技能",
         checkedAt: "上次检查 {time}",
         noCredential: "如果克隆失败，请先在本机完成该仓库的 git 认证。",
-        scanAgain: "重新扫描"
+        scanAgain: "重新扫描",
+        repoLinkOpen: "打开仓库",
+        repoToggleLabel: "启用或停用该仓库的全部技能",
+        repoStats: "{enabled}/{imported} 已启用",
+        repoAvailable: "共 {available} 个技能，已导入 {imported}",
+        repoAvailableShort: "可导入 {count} 个",
+        repoAllImported: "全部已导入",
+        importMore: "导入更多",
+        repoScanning: "正在扫描仓库…",
+        repoInspectTitle: "从仓库导入更多技能",
+        repoInspectDesc: "快照中还有未导入的技能，勾选后导入；已导入的技能会置灰。",
+        repoInspectEmpty: "该仓库的技能已全部导入",
+        alreadyImported: "已导入",
+        selectAll: "全选",
+        clearSelection: "清空",
+        importSelected: "导入所选（{count}）",
+        importResult: "已导入 {installed} 个技能，跳过 {skipped} 个",
+        repoSkillsCount: "{count} 个技能",
+        repoEmptyFiltered: "此仓库下没有匹配的技能",
+        repoLocalHint: "本地目录",
+        skillContent: "SKILL.md 内容",
+        contentTruncated: "内容过长，仅显示前 64 KiB"
       },
       en: {
         nav: "Skills",
@@ -251,7 +272,28 @@ window.__ModuleLoader__.load({
         emptyFiltered: "No skills match this filter",
         checkedAt: "Checked {time}",
         noCredential: "If cloning fails, complete git authentication for this repository on this machine first.",
-        scanAgain: "Scan again"
+        scanAgain: "Scan again",
+        repoLinkOpen: "Open repository",
+        repoToggleLabel: "Enable or disable every skill in this repository",
+        repoStats: "{enabled}/{imported} enabled",
+        repoAvailable: "{available} skills in total, {imported} imported",
+        repoAvailableShort: "{count} available",
+        repoAllImported: "All imported",
+        importMore: "Import more",
+        repoScanning: "Scanning repository…",
+        repoInspectTitle: "Import more skills from this repository",
+        repoInspectDesc: "The snapshot still contains skills you have not imported. Select them below; imported skills are dimmed.",
+        repoInspectEmpty: "Every skill in this repository is already imported",
+        alreadyImported: "Imported",
+        selectAll: "Select all",
+        clearSelection: "Clear",
+        importSelected: "Import selected ({count})",
+        importResult: "Imported {installed} skills, skipped {skipped}",
+        repoSkillsCount: "{count} skills",
+        repoEmptyFiltered: "No skills match in this repository",
+        repoLocalHint: "Local folder",
+        skillContent: "SKILL.md content",
+        contentTruncated: "Content is too long; showing the first 64 KiB"
       }
     };
 
@@ -365,6 +407,7 @@ window.__ModuleLoader__.load({
         title: props.title || props.label,
         disabled: !!props.disabled,
         className: "skm-switch",
+        "data-mixed": props.mixed ? "true" : "false",
         onClick: function (event) {
           event.stopPropagation();
           if (typeof props.onChange === "function") props.onChange(!checked);
@@ -458,6 +501,38 @@ window.__ModuleLoader__.load({
     function hostOf(url) {
       if (typeof url !== "string" || url === "") return "";
       try { return new URL(url).host || url } catch (error) { return url }
+    }
+
+    function repoLabel(url, kind) {
+      var text = String(url || "");
+      if (kind === "local") {
+        var local = text.split(/[\\/]+/).filter(Boolean);
+        return local.length > 0 ? local[local.length - 1] : text;
+      }
+      var clean = text.replace(/[\/]+$/, "").replace(/\.git$/, "");
+      if (/^https?:\/\//i.test(clean)) {
+        try {
+          var segments = new URL(clean).pathname.replace(/\/+$/, "").split("/").filter(Boolean);
+          if (segments.length > 0) return segments.slice(-2).join("/");
+        } catch (error) {}
+      }
+      var scp = clean.match(/^[^@]+@[^:]+:(.+)$/);
+      if (scp) {
+        var scpParts = scp[1].split("/").filter(Boolean);
+        if (scpParts.length > 0) return scpParts.slice(-2).join("/");
+      }
+      var plain = clean.split(/[\\/]/).filter(Boolean);
+      return plain.length > 0 ? plain.slice(-2).join("/") : clean;
+    }
+
+    function repoWebUrl(url) {
+      var text = String(url || "");
+      if (/^https?:\/\//i.test(text)) return text.replace(/\.git$/, "");
+      var scp = text.match(/^git@([^:]+):(.+?)(?:\.git)?$/);
+      if (scp) return "https://" + scp[1] + "/" + scp[2];
+      var ssh = text.match(/^ssh:\/\/git@([^/]+)\/(.+?)(?:\.git)?$/);
+      if (ssh) return "https://" + ssh[1] + "/" + ssh[2];
+      return "";
     }
 
     function shortTime(value) {
@@ -714,6 +789,121 @@ window.__ModuleLoader__.load({
       }, h("p", { className: "skm-hint", style: { fontSize: "13px", lineHeight: "20px" } }, props.message));
     }
 
+    // ── Repository import dialog ─────────────────────────────────────────
+    function RepoImportDialog(props) {
+      var t = props.t;
+      var repo = props.repo;
+      var _data = useState(null);
+      var data = _data[0], setData = _data[1];
+      var _busy = useState(true);
+      var busy = _busy[0], setBusy = _busy[1];
+      var _error = useState("");
+      var error = _error[0], setError = _error[1];
+      var _selected = useState({});
+      var selected = _selected[0], setSelected = _selected[1];
+
+      useEffect(function () {
+        var alive = true;
+        setBusy(true);
+        apiPost("/repos/inspect", { repoId: repo.id }).then(function (result) {
+          if (!alive) return;
+          setData(result);
+          setBusy(false);
+        }).catch(function (failure) {
+          if (!alive) return;
+          setError(errorMessage(failure));
+          setBusy(false);
+        });
+        return function () { alive = false };
+      }, [repo.id]);
+
+      var candidates = data ? data.skills.filter(function (item) { return item.valid && !item.imported }) : [];
+      var chosen = candidates.filter(function (item) { return selected[item.relPath] });
+
+      function setAll(on) {
+        var next = {};
+        if (on) for (var i = 0; i < candidates.length; i += 1) next[candidates[i].relPath] = true;
+        setSelected(next);
+      }
+
+      function submit() {
+        if (chosen.length === 0 || busy) return;
+        setBusy(true);
+        apiPost("/repos/import", {
+          repoId: repo.id,
+          skills: chosen.map(function (item) { return { relPath: item.relPath, name: item.suggestedName || item.name } })
+        }).then(function (result) {
+          props.onDone(result);
+        }).catch(function (failure) {
+          setError(errorMessage(failure));
+          setBusy(false);
+        });
+      }
+
+      var rows = [];
+      for (var i = 0; i < (data ? data.skills.length : 0); i += 1) {
+        (function (item) {
+          var disabled = item.imported || !item.valid;
+          var checked = !!selected[item.relPath];
+          rows.push(h("label", { key: item.relPath, className: "skm-scanRow", "data-disabled": disabled ? "true" : "false" },
+            h("input", {
+              type: "checkbox",
+              checked: checked,
+              disabled: disabled || busy,
+              onChange: function () {
+                setSelected(function (previous) {
+                  var next = Object.assign({}, previous);
+                  if (next[item.relPath]) delete next[item.relPath]; else next[item.relPath] = true;
+                  return next;
+                });
+              }
+            }),
+            h("div", { className: "skm-scanMain" },
+              h("div", { className: "skm-scanName" },
+                h("span", {}, item.name || item.suggestedName),
+                item.imported ? h(Tag, { tone: "outline" }, t("alreadyImported")) : null,
+                !item.valid ? h(Tag, { tone: "error" }, t("badgeError")) : null,
+                item.hidden ? h(Tag, { tone: "warn" }, "hidden") : null),
+              item.description ? h("div", { className: "skm-desc" }, item.description) : null,
+              h("div", { className: "skm-scanPath" }, h("code", {}, item.relPath)),
+              !item.valid && item.reason ? h("div", { className: "skm-inlineErr" }, item.reason) : null)));
+        })(data.skills[i]);
+      }
+
+      var body;
+      if (busy && !data) {
+        body = h("div", { className: "skm-loading" }, h(Spinner, {}), t("repoScanning"));
+      } else if (error && !data) {
+        body = h("div", {}, h("p", { className: "skm-inlineErr", role: "alert" }, error));
+      } else {
+        body = h("div", {},
+          h("div", { className: "skm-scanHead" },
+            h("span", {}, t("repoAvailable", { available: data ? data.available : 0, imported: data ? data.imported : 0 })),
+            data && data.repo ? h("code", {}, String(data.repo.ref || "HEAD").slice(0, 24)) : null,
+            data && data.repo && data.repo.shortCommit ? h("code", {}, data.repo.shortCommit) : null,
+            h("div", { className: "skm-grow" }),
+            h(Button, { variant: "ghost", disabled: busy || candidates.length === 0, onClick: function () { setAll(true) } }, t("selectAll")),
+            h(Button, { variant: "ghost", disabled: busy || candidates.length === 0, onClick: function () { setAll(false) } }, t("clearSelection"))),
+          candidates.length === 0 ? h("p", { className: "skm-hint" }, t("repoInspectEmpty")) : h("div", { className: "skm-scanList" }, rows),
+          data && data.truncated ? h("p", { className: "skm-codeNote" }, "…") : null,
+          error ? h("p", { className: "skm-inlineErr", role: "alert" }, error) : null);
+      }
+
+      return h(Modal, {
+        open: true,
+        onClose: busy ? function () {} : props.onClose,
+        title: t("repoInspectTitle"),
+        description: t("repoInspectDesc"),
+        closeLabel: t("close"),
+        wide: true,
+        footer: [
+          h("div", { key: "grow", className: "skm-grow" }),
+          h(Button, { key: "cancel", variant: "ghost", onClick: props.onClose, disabled: busy }, t("cancel")),
+          h(Button, { key: "ok", variant: "primary", onClick: submit, disabled: busy || chosen.length === 0 }, busy ? t("repoScanning") : t("importSelected", { count: chosen.length }))
+        ]
+      }, body);
+    }
+
     // ── Section ───────────────────────────────────────────────────────────
     function SkillsSection(props) {
       var t = props.t;
@@ -743,6 +933,10 @@ window.__ModuleLoader__.load({
       var eventsOpen = _eventsOpen[0], setEventsOpen = _eventsOpen[1];
       var _copied = useState("");
       var copied = _copied[0], setCopied = _copied[1];
+      var _collapsedRepos = useState({});
+      var collapsedRepos = _collapsedRepos[0], setCollapsedRepos = _collapsedRepos[1];
+      var _repoDialog = useState(null);
+      var repoDialog = _repoDialog[0], setRepoDialog = _repoDialog[1];
 
       var load = useCallback(function (silent) {
         return apiGet("/state").then(function (next) {
@@ -870,6 +1064,29 @@ window.__ModuleLoader__.load({
         });
       }
 
+      function toggleRepoOpen(repoId) {
+        setCollapsedRepos(function (previous) {
+          var next = Object.assign({}, previous);
+          if (next[repoId]) delete next[repoId]; else next[repoId] = true;
+          return next;
+        });
+      }
+
+      function toggleRepo(repo) {
+        var key = "__repo__" + repo.id;
+        if (busy[key]) return;
+        var allOn = repo.skills > 0 && repo.enabled === repo.skills;
+        var nextEnabled = !allOn;
+        setBusyFor(key, "toggle");
+        apiPost("/repos/toggle", { repoId: repo.id, enabled: nextEnabled }).then(function (result) {
+          setAlert({ tone: "ok", text: t("alertBulk", { count: result.changed || 0 }) });
+          return load(true);
+        }).catch(function (failure) {
+          setAlert({ tone: "error", text: t("actionFailed", { message: errorMessage(failure) }) });
+          return load(true);
+        }).then(function () { setBusyFor(key, null) });
+      }
+
       function expandSkill(skill) {
         var open = !expanded[skill.name];
         setExpanded(function (previous) {
@@ -922,6 +1139,37 @@ window.__ModuleLoader__.load({
           return haystack.indexOf(needle) >= 0;
         });
       }, [skills, query, filter]);
+
+      var repos = data ? data.repos || [] : [];
+      var groups = useMemo(function () {
+        var byId = new Map();
+        for (var r = 0; r < repos.length; r += 1) byId.set(repos[r].id, repos[r]);
+        var buckets = new Map();
+        for (var i = 0; i < filtered.length; i += 1) {
+          var skill = filtered[i];
+          var id = skill.repo ? skill.repo.id : "__orphan__";
+          if (!buckets.has(id)) buckets.set(id, []);
+          buckets.get(id).push(skill);
+        }
+        var list = [];
+        buckets.forEach(function (items, id) {
+          var repo = byId.get(id) || (items[0] && items[0].repo) || { id: id, url: "", kind: "local", skills: items.length, enabled: 0 };
+          items.sort(function (a, b) {
+            if (a.enabled !== b.enabled) return a.enabled ? -1 : 1;
+            return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
+          });
+          list.push({ id: id, repo: repo, skills: items });
+        });
+        list.sort(function (a, b) {
+          var ea = (a.repo.enabled || 0) > 0 ? 0 : 1;
+          var eb = (b.repo.enabled || 0) > 0 ? 0 : 1;
+          if (ea !== eb) return ea - eb;
+          var la = repoLabel(a.repo.url, a.repo.kind).toLowerCase();
+          var lb = repoLabel(b.repo.url, b.repo.kind).toLowerCase();
+          return la < lb ? -1 : la > lb ? 1 : 0;
+        });
+        return list;
+      }, [filtered, repos]);
 
       function renderDetail(skill) {
         var entry = content[skill.name];
@@ -1002,8 +1250,84 @@ window.__ModuleLoader__.load({
               h("span", { className: "skm-desc" }, skill.description || ""),
               h("span", { className: "skm-meta" }, meta)),
             h("div", { className: "skm-rowActions" },
-              h("span", { className: "skm-chevron", "data-open": open ? "true" : "false" }, h(Icon, { name: "chevron", size: 15 })))),
+              h("button", {
+                type: "button",
+                className: "skm-ibtn skm-chevronBtn",
+                "data-open": open ? "true" : "false",
+                "aria-expanded": open,
+                "aria-label": t(open ? "collapse" : "expand") + " " + skill.name,
+                title: t(open ? "collapse" : "expand"),
+                onClick: function (event) { event.stopPropagation(); expandSkill(skill) }
+              }, h(Icon, { name: "chevron", size: 15 })))),
           open ? renderDetail(skill) : null);
+      }
+
+      function renderRepoGroup(group) {
+        var repo = group.repo || {};
+        var collapsed = !!collapsedRepos[repo.id];
+        var total = typeof repo.skills === "number" ? repo.skills : group.skills.length;
+        var enabledCount = typeof repo.enabled === "number" ? repo.enabled : group.skills.filter(function (item) { return item.enabled }).length;
+        var available = repo.available || null;
+        var allOn = total > 0 && enabledCount === total;
+        var mixed = enabledCount > 0 && !allOn;
+        var label = repoLabel(repo.url, repo.kind);
+        var web = repoWebUrl(repo.url);
+        var repoKey = "__repo__" + repo.id;
+        var badges = [];
+        if (repo.ref && repo.kind !== "local") badges.push(h(Tag, { key: "ref" }, repo.ref));
+        if (repo.shortCommit) badges.push(h("code", { key: "commit" }, repo.shortCommit));
+        if (repo.updateAvailable) badges.push(h(Tag, { key: "update", tone: "warn" }, t("badgeUpdate")));
+        if (available && available > total) badges.push(h(Tag, { key: "more", tone: "accent" }, t("repoAvailableShort", { count: available - total })));
+        var countText = available
+          ? t("repoAvailable", { available: available, imported: total })
+          : t("repoStats", { enabled: enabledCount, imported: total });
+        return h("section", { key: repo.id, className: "skm-repo", "data-open": collapsed ? "false" : "true" },
+          h("header", { className: "skm-repoHead" },
+            h("button", {
+              type: "button",
+              className: "skm-ibtn skm-repoToggle",
+              "data-open": collapsed ? "false" : "true",
+              "aria-expanded": !collapsed,
+              "aria-label": label,
+              title: t(collapsed ? "expand" : "collapse"),
+              onClick: function () { toggleRepoOpen(repo.id) }
+            }, h(Icon, { name: "chevron", size: 15 })),
+            h("span", { className: "skm-repoIcon", "aria-hidden": "true" }, h(Icon, { name: repo.kind === "local" ? "folder" : "box", size: 16 })),
+            h("div", { className: "skm-repoTitle" },
+              h("div", { className: "skm-repoNameRow" },
+                h("span", { className: "skm-repoName" }, label),
+                web ? h("a", {
+                  key: "link",
+                  className: "skm-repoLink",
+                  href: web,
+                  target: "_blank",
+                  rel: "noreferrer noopener",
+                  title: t("repoLinkOpen"),
+                  "aria-label": t("repoLinkOpen")
+                }, h(Icon, { name: "external", size: 13 })) : null,
+                h("span", { className: "skm-repoBadges" }, badges)),
+              h("div", { className: "skm-repoMeta" },
+                h("span", {}, countText),
+                h("span", { className: "skm-repoUrl", title: repo.url }, repo.url))),
+            h("div", { className: "skm-repoActions" },
+              h(Switch, {
+                checked: allOn,
+                mixed: mixed,
+                disabled: !!busy[repoKey],
+                label: t("repoToggleLabel"),
+                title: t("repoToggleLabel"),
+                onChange: function () { toggleRepo(repo) }
+              }),
+              h(Button, {
+                variant: "ghost",
+                icon: "plus",
+                disabled: !!busy[repoKey],
+                onClick: function () { setRepoDialog(repo) }
+              }, t("importMore")))),
+          collapsed ? null : h("div", { className: "skm-repoBody" },
+            group.skills.length === 0
+              ? h("p", { className: "skm-hint" }, t("repoEmptyFiltered"))
+              : h("ul", { className: "skm-list" }, group.skills.map(renderRow))));
       }
 
       var header = h("div", { className: "skm-headRow" },
@@ -1099,19 +1423,8 @@ window.__ModuleLoader__.load({
           h(Icon, { name: "search", size: 24 }),
           h("div", { className: "skm-emptyTitle" }, t("noMatch")));
       } else {
-        list = h("ul", { className: "skm-list" }, filtered.map(renderRow));
+        list = h("div", { className: "skm-repos" }, groups.map(renderRepoGroup));
       }
-
-      var repos = data.repos || [];
-      var repoBlock = repos.length > 0 ? h("details", { className: "skm-repos" },
-        h("summary", { className: "skm-detailsSummary" }, t("reposTitle") + " " + repos.length),
-        h("div", { className: "skm-events" }, repos.map(function (repo) {
-          return h("div", { key: repo.id },
-            h("span", { style: { flex: "1 1 auto", overflowWrap: "anywhere" } }, repo.url),
-            h("span", {}, (repo.ref || "HEAD") + " · " + (repo.shortCommit || t("sourceLocal"))),
-            h("span", {}, repo.enabled + "/" + repo.skills),
-            repo.updateAvailable ? h(Tag, { tone: "warn" }, t("updateAvailable")) : null);
-        }))) : null;
 
       var events = data.events || [];
       var eventsBlock = eventsOpen ? h("div", { className: "skm-events" },
@@ -1128,7 +1441,6 @@ window.__ModuleLoader__.load({
         notice,
         toolbar,
         list,
-        repoBlock,
         eventsBlock,
         h("p", { className: "skm-hint" }, t("pathHint", { path: data.paths ? data.paths.manager : "" })),
         importOpen ? h(ImportDialog, {
@@ -1150,6 +1462,19 @@ window.__ModuleLoader__.load({
           confirmLabel: t("confirmRemove"),
           onClose: function () { setConfirm(null) },
           onConfirm: confirm.onConfirm
+        }) : null,
+        repoDialog ? h(RepoImportDialog, {
+          t: t,
+          repo: repoDialog,
+          onClose: function () { setRepoDialog(null) },
+          onDone: function (result) {
+            setRepoDialog(null);
+            setAlert({
+              tone: result.skipped && result.skipped.length > 0 ? "warn" : "ok",
+              text: t("importResult", { installed: (result.installed || []).length, skipped: (result.skipped || []).length })
+            });
+            load(true);
+          }
         }) : null);
     }
 

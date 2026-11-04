@@ -1,6 +1,6 @@
 {
   "name": "dsh-skills-tools",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "description": "Import Git skills into DeepSeek Harness, manage them like Cursor, and enable or disable each skill on demand",
   "icon": "icon.svg",

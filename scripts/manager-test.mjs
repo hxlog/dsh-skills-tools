@@ -152,6 +152,43 @@ await check('refresh reparses skills', async () => {
   assert.ok(refreshed.refreshed >= 5)
 })
 
+await check('repo grouping: inspect reports full availability', async () => {
+  const repos = manager.views().repos
+  assert.equal(repos.length, 1)
+  assert.equal(repos[0].available, 5)
+  const info = await manager.inspectRepo(repos[0].id)
+  assert.equal(info.available, 5)
+  assert.equal(info.imported, 5)
+  assert.ok(info.skills.filter(function (s) { return s.valid }).every(function (s) { return s.imported }))
+})
+
+await check('repo grouping: partial import restores remaining skills', async () => {
+  const repoId = manager.views().repos[0].id
+  await manager.removeSkill('check')
+  await manager.removeSkill('beta-check')
+  const info = await manager.inspectRepo(repoId)
+  assert.equal(info.imported, 3)
+  const missing = info.skills.filter(function (s) { return !s.imported && s.valid })
+  assert.equal(missing.length, 2)
+  const added = await manager.importFromRepo({ repoId: repoId, skills: missing.map(function (s) { return { relPath: s.relPath, name: s.name } }) })
+  assert.equal(added.installed.length, 2)
+  assert.equal(manager.views().summary.total, 5)
+  const again = await manager.inspectRepo(repoId)
+  assert.ok(again.skills.filter(function (s) { return s.valid }).every(function (s) { return s.imported }))
+  await assert.rejects(async function () { await manager.importFromRepo({ repoId: repoId, skills: [] }) }, /至少选择一个/)
+})
+
+await check('repo grouping: toggle whole repository', async () => {
+  const repoId = manager.views().repos[0].id
+  const off = await manager.toggleRepo(repoId, false)
+  assert.equal(off.changed, 5)
+  assert.equal(manager.providerCandidates().length, 0)
+  const on = await manager.toggleRepo(repoId, true)
+  assert.equal(on.changed, 5)
+  assert.equal(manager.providerCandidates().length, 5)
+  await assert.rejects(async function () { await manager.toggleRepo('repo_missing', true) }, /仓库不存在/)
+})
+
 await check('remove a skill and its empty repo', async () => {
   const before = manager.views().summary.total
   const removed = await manager.removeSkill('router')
@@ -206,4 +243,4 @@ if (problems.length > 0) {
   for (const p of problems) console.error(' - ' + p)
   process.exit(1)
 }
-console.log('manager test OK: 14 groups, provider contract + toggles + updates + idempotent re-import')
+console.log('manager test OK: 17 groups, provider contract + toggles + updates + idempotent re-import')
