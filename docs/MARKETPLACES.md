@@ -52,6 +52,7 @@ Body: Import Agent Skills from any Git repository, toggle each skill on or off, 
 | --- | --- | --- | --- |
 | vvlife/awesome-deepseek-harness-plugins | README 单行新增（Tools & Editor UX） | ✅ 已合并 | https://github.com/vvlife/awesome-deepseek-harness-plugins/pull/176 |
 | jiji262/awesome-deepseek-harness | README 单行新增（Agent Skills） | 🟡 待审 | https://github.com/jiji262/awesome-deepseek-harness/pull/52 |
+| libukai/awesome-deepseek-harness | README 单行新增（上下文、会话与输入） | 🟡 待审 | https://github.com/libukai/awesome-deepseek-harness/pull/160 |
 | imsai-sh/awesome-deepseek-harness-plugins（deepseek1024） | catalog JSON 单文件（category: skill） | 🟡 待审 | https://github.com/imsai-sh/awesome-deepseek-harness-plugins/pull/809 |
 | awesome-dsh-plugin/awesome-dsh-plugin | `data/plugins/hxlog__dsh-skills-tools.yml` | 🟡 待审（仓库创建未满 24h，CI 可能要求重新提交） | https://github.com/awesome-dsh-plugin/awesome-dsh-plugin/pull/11849 |
 | dsh-plugin.org（dshplugin/dsh-plugin-hub） | Issue 模板提交 | 🟡 待审 | https://github.com/dshplugin/dsh-plugin-hub/issues/616 |
