@@ -45,3 +45,19 @@ Developer Tools / AI Agents / Settings
 Title: DSH Skills Tools — a Cursor-style skills manager for DeepSeek Harness
 
 Body: Import Agent Skills from any Git repository, toggle each skill on or off, check upstream commits and switch snapshots. Disabled skills stay out of the model context. Repositories are kept as read-only snapshots, so your source tree is never modified. Works with GitHub, GitLab, intranet hosts and local folders using your existing git credentials.
+
+## 提交状态（2026-11-04）
+
+| 市场 | 方式 | 状态 | 链接 |
+| --- | --- | --- | --- |
+| vvlife/awesome-deepseek-harness-plugins | README 单行新增（Tools & Editor UX） | ✅ 已合并 | https://github.com/vvlife/awesome-deepseek-harness-plugins/pull/176 |
+| jiji262/awesome-deepseek-harness | README 单行新增（Agent Skills） | 🟡 待审 | https://github.com/jiji262/awesome-deepseek-harness/pull/52 |
+| imsai-sh/awesome-deepseek-harness-plugins（deepseek1024） | catalog JSON 单文件（category: skill） | 🟡 待审 | https://github.com/imsai-sh/awesome-deepseek-harness-plugins/pull/809 |
+| awesome-dsh-plugin/awesome-dsh-plugin | `data/plugins/hxlog__dsh-skills-tools.yml` | 🟡 待审（仓库创建未满 24h，CI 可能要求重新提交） | https://github.com/awesome-dsh-plugin/awesome-dsh-plugin/pull/11849 |
+| dsh-plugin.org（dshplugin/dsh-plugin-hub） | Issue 模板提交 | 🟡 待审 | https://github.com/dshplugin/dsh-plugin-hub/issues/616 |
+| deepseek-harness Discussions（Show Your Plugins!） | 新建 Discussion | ✅ 已发布 | https://github.com/deepseek-ai/deepseek-harness/discussions/12094 |
+| dshplugins.com | 网页表单 | ⚪ 需 Google 登录后提交 | https://dshplugins.com/submit |
+| dshmarketplace.com | 邮件 hello@dshmarketplace.com | ⚪ 待发邮件 | https://dshmarketplace.com |
+| dshplugin.app | 网页表单（含 captcha） | ⚪ 需人工过验证码 | https://dshplugin.app/submit |
+
+自动收录：已发布 npm（`dsh-skills-tools`）并设置 `dsh-plugin`、`deepseek-harness` 等 GitHub topics，dsh.market、dsh.so、dsh-plugins.org、dsh-plugin-catalog、bradeGithub、LivXue、unStone、linny006、dshmk 等按 topic / npm 关键字自动抓取的目录会随下一次抓取生效。
