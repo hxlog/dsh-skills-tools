@@ -189,6 +189,20 @@ await check('repo grouping: toggle whole repository', async () => {
   await assert.rejects(async function () { await manager.toggleRepo('repo_missing', true) }, /仓库不存在/)
 })
 
+await check('repo grouping: backfill availability for legacy state', async () => {
+  const { loadState, saveState } = await import('../lib/state.js')
+  const saved = loadState()
+  for (const repo of saved.repos) repo.available = null
+  saveState(saved)
+  const result = await manager.backfillAvailability()
+  assert.equal(result.updated, 1)
+  const views = manager.views()
+  assert.equal(views.repos.length, 1)
+  assert.equal(views.repos[0].available, 5)
+  const again = await manager.backfillAvailability()
+  assert.equal(again.updated, 0)
+})
+
 await check('remove a skill and its empty repo', async () => {
   const before = manager.views().summary.total
   const removed = await manager.removeSkill('router')
@@ -243,4 +257,4 @@ if (problems.length > 0) {
   for (const p of problems) console.error(' - ' + p)
   process.exit(1)
 }
-console.log('manager test OK: 17 groups, provider contract + toggles + updates + idempotent re-import')
+console.log('manager test OK: 18 groups, provider contract + toggles + updates + idempotent re-import')
