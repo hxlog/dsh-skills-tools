@@ -1,3 +1,7 @@
 {
-  "nav": "Skills"
+  "nav": "Skills",
+  "meta": {
+    "title": "Skills Manager",
+    "description": "Import skills from Git repositories, manage them by repository, enable them on demand and preview SKILL.md content."
+  }
 }

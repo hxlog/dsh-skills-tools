@@ -2,9 +2,9 @@
   "manifest_version": 2,
   "type": "plugin",
   "id": "hxlog/dsh-skills-tools",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "channel": "stable",
-  "name": "Skills管理器",
+  "name": "dsh-skills-tools",
   "description": "DeepSeek Harness 的 Skills 管理器：从 Git 仓库导入技能，按仓库分组管理，随时启用、停用、补齐与查看内容。",
   "runtime": {
     "type": "plugin"

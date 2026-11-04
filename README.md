@@ -67,7 +67,7 @@ dsh plugin --profile web add dsh-skills-tools      # Web
 dsh plugin --profile desktop add dsh-skills-tools  # Desktop
 ```
 
-当前版本 **1.1.0**：按仓库分组、仓库级开关、从快照补齐剩余技能。
+当前版本 **1.1.1**：按仓库分组、仓库级开关、从快照补齐剩余技能，插件名与图标和设置页一致。
 
 > 升级包版本后需要重启 `dsh web` / 重启 DSH Desktop。
 >

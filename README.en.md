@@ -67,7 +67,7 @@ dsh plugin --profile web add dsh-skills-tools      # Web
 dsh plugin --profile desktop add dsh-skills-tools  # Desktop
 ```
 
-Current version **1.1.0**: grouped by repository, repository switch, and completing skills from an existing snapshot.
+Current version **1.1.1**: grouped by repository, repository switch, and completing skills from an existing snapshot.
 
 > Restart `dsh web` / DSH Desktop after upgrading.
 >
