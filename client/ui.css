@@ -61,7 +61,12 @@
 .skm-banner { display: flex; gap: 8px; align-items: flex-start; padding: 9px 11px; border-radius: 7px; background: var(--dsw-alias-bg-layer-1); border: var(--skm-hairline) solid var(--dsw-alias-border-l1); color: var(--dsw-alias-label-secondary); font-size: var(--skm-fs-caption); line-height: var(--skm-line-desc); }
 .skm-banner[data-tone="error"] { color: var(--dsw-alias-state-error-primary); }
 .skm-banner[data-tone="warn"] { color: var(--dsw-alias-label-secondary); }
+.skm-banner[data-tone="update"] { border-color: var(--dsw-alias-state-warning-primary, #c98a00); }
 .skm-banner svg { flex: none; margin-top: 1px; }
+.skm-bannerText { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.skm-bannerText strong { font-weight: 600; color: var(--dsw-alias-label-primary); }
+.skm-bannerSub { color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-tiny); line-height: 16px; }
+.skm-bannerActions { display: flex; align-items: center; gap: var(--skm-gap-sm); flex: none; flex-wrap: wrap; }
 
 .skm-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
 .skm-row { border-bottom: var(--skm-hairline) solid var(--dsw-alias-border-l1); }
@@ -105,9 +110,17 @@
 .skm-emptyTitle { color: var(--dsw-alias-label-secondary); font-size: var(--skm-fs-body); font-weight: 500; }
 .skm-emptyText { max-width: 420px; font-size: var(--skm-fs-caption); line-height: var(--skm-line-desc); }
 .skm-detailsSummary { cursor: pointer; color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-caption); }
-.skm-events { display: flex; flex-direction: column; gap: 4px; margin: 6px 0 0; padding: 10px 12px; border-radius: 7px; background: var(--dsw-alias-bg-layer-1); font-size: var(--skm-fs-tiny); line-height: 16px; color: var(--dsw-alias-label-tertiary); max-height: 220px; overflow: auto; }
-.skm-events div { display: flex; gap: 8px; }
-.skm-events time { flex: none; color: var(--dsw-alias-label-tertiary); font-variant-numeric: tabular-nums; }
+/* ── Activity log dialog (v1.3) ──────────────────────────────────────── */
+.skm-logList { display: flex; flex-direction: column; max-height: min(52vh, 420px); overflow: auto; }
+.skm-logRow { display: grid; grid-template-columns: auto auto minmax(0, 1fr); align-items: start; gap: 8px; padding: 7px 2px; border-bottom: var(--skm-hairline) solid var(--dsw-alias-border-l1); font-size: var(--skm-fs-tiny); line-height: 16px; }
+.skm-logRow:last-child { border-bottom: 0; }
+.skm-logTime { color: var(--dsw-alias-label-tertiary); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.skm-logDot { width: 6px; height: 6px; margin-top: 5px; border-radius: 50%; background: var(--dsw-alias-label-tertiary); }
+.skm-logDot[data-level="warn"] { background: var(--dsw-alias-state-warning-primary, #c98a00); }
+.skm-logDot[data-level="error"] { background: var(--dsw-alias-state-error-primary); }
+.skm-logMsg { color: var(--dsw-alias-label-secondary); overflow-wrap: anywhere; }
+.skm-logMsg code { margin-right: 6px; font-family: var(--dsw-font-family-mono, ui-monospace, Menlo, monospace); font-size: var(--skm-fs-tiny); }
+.skm-logMeta { margin-right: auto; color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-tiny); }
 
 .skm-spin { animation: skm-spin 900ms linear infinite; }
 @keyframes skm-spin { to { transform: rotate(360deg); } }

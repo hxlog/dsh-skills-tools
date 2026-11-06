@@ -271,6 +271,63 @@ await check('invalid selection is rejected', async () => {
   }, /扫描结果已过期/)
 })
 
+await check('updateRepo keeps the local snapshot fresh and logs the change', async () => {
+  const repoId = manager.views().repos[0].id
+  const result = await manager.updateRepo(repoId)
+  assert.equal(result.ok, true)
+  assert.equal(result.repo, repoId)
+  const events = manager.log.list(200)
+  assert.ok(events.some(function (entry) { return entry.message.indexOf('已更新 ') === 0 }), 'update must be recorded in the activity log')
+})
+
+await check('activity log survives a restart by reloading logs.jsonl', async () => {
+  const { createEventLog } = await import('../lib/util.js')
+  const replay = createEventLog(300)
+  const events = replay.list(300)
+  assert.ok(events.length > 0, 'expected replayed log entries')
+  assert.ok(events.some(function (entry) { return entry.message.indexOf('已更新 ') === 0 }))
+})
+
+await check('checkUpdates skips local folders and isolates unreachable remotes', async () => {
+  const localOnly = await manager.checkUpdates()
+  assert.equal(localOnly.ok, true)
+  assert.equal(localOnly.updates, 0)
+  assert.equal(localOnly.repos.length, 0)
+
+  const { loadState, saveState } = await import('../lib/state.js')
+  const state = loadState()
+  state.repos.push({
+    id: 'repo_offline',
+    url: 'https://127.0.0.1:1/offline.git',
+    kind: 'git',
+    ref: '',
+    subdir: '',
+    commit: 'a'.repeat(40),
+    snapshot: '',
+    files: 0,
+    bytes: 0,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+    checkedAt: 0,
+    latestCommit: null,
+    lastError: null,
+    available: null
+  })
+  saveState(state)
+  try {
+    const probed = await manager.checkUpdates()
+    assert.equal(probed.ok, true)
+    assert.equal(probed.updates, 0)
+    const offline = probed.repos.find(function (row) { return row.id === 'repo_offline' })
+    assert.ok(offline, 'offline repo must appear in the probe result')
+    assert.ok(offline.error, 'offline repo must record an error instead of throwing')
+  } finally {
+    const current = loadState()
+    current.repos = current.repos.filter(function (item) { return item.id !== 'repo_offline' })
+    saveState(current)
+  }
+})
+
 await check('state file and lock hygiene', async () => {
   assert.ok(fs.existsSync(path.join(home, 'dsh-skills-tools', 'state.json')))
   assert.ok(!fs.existsSync(path.join(home, 'dsh-skills-tools', 'state.lock')))
@@ -288,4 +345,4 @@ if (problems.length > 0) {
   for (const p of problems) console.error(' - ' + p)
   process.exit(1)
 }
-console.log('manager test OK: 19 groups, provider contract + toggles + updates + idempotent re-import + subdir filtering')
+console.log('manager test OK: 22 groups, provider contract + toggles + updates + repo updates + activity log + idempotent re-import + subdir filtering')

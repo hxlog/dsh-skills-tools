@@ -17,6 +17,8 @@ window.__ModuleLoader__.load({
     var NS = "skillsManager";
     var API_BASE = "/skills-tools/api";
     var POLL_INTERVAL_MS = 15000;
+    var AUTO_CHECK_MS = 30 * 60 * 1000;
+    var UI_STORE_KEY = "dsh-skills-tools:ui:v1";
     var STYLE_ID = "dsh-skills-tools/SkillsManager.module.css";
     var SKILL_NAME_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
@@ -43,6 +45,28 @@ window.__ModuleLoader__.load({
       return String(template).replace(/\{([a-zA-Z0-9_]+)\}/g, function (match, key) {
         return params[key] === undefined || params[key] === null ? match : String(params[key]);
       });
+    }
+
+    // Per-browser UI state (expanded repository groups, dismissed update banner).
+    // localStorage may be unavailable (private mode, embedded webview): degrade
+    // to in-memory state instead of failing the panel.
+    function readUiStore() {
+      try {
+        if (typeof window === "undefined" || !window.localStorage) return {};
+        var raw = window.localStorage.getItem(UI_STORE_KEY);
+        if (!raw) return {};
+        var parsed = JSON.parse(raw);
+        return parsed && typeof parsed === "object" ? parsed : {};
+      } catch (error) {
+        return {};
+      }
+    }
+
+    function writeUiStore(next) {
+      try {
+        if (typeof window === "undefined" || !window.localStorage) return;
+        window.localStorage.setItem(UI_STORE_KEY, JSON.stringify(next));
+      } catch (error) {}
     }
 
     // ── Dictionaries: zh is the source of truth; en mirrors every key ──────
@@ -169,7 +193,25 @@ window.__ModuleLoader__.load({
         repoEmptyFiltered: "此仓库下没有匹配的技能",
         repoLocalHint: "本地目录",
         skillContent: "SKILL.md 内容",
-        contentTruncated: "内容过长，仅显示前 64 KiB"
+        contentTruncated: "内容过长，仅显示前 64 KiB",
+        collapseAll: "全部折叠",
+        expandAll: "全部展开",
+        updateBanner: "{count} 个仓库有新提交",
+        updateBannerOne: "1 个仓库有新提交",
+        updateAll: "全部更新",
+        updatingAll: "正在更新 {done}/{total}…",
+        updateAllDone: "已更新 {count} 个仓库",
+        updateAllFailed: "{count} 个仓库更新失败",
+        viewUpdates: "查看",
+        dismissUpdate: "关闭提示",
+        updateConfirmTitle: "全部更新",
+        updateConfirmText: "将依次更新 {count} 个仓库到最新提交，期间技能可能短暂重新加载。继续？",
+        logsDesc: "本机操作记录，最多保留 300 条。",
+        logsCount: "共 {count} 条",
+        logsCopy: "复制",
+        logsFailed: "复制失败，请手动选择文本",
+        levelWarn: "警告",
+        levelError: "错误"
       },
       en: {
         nav: "Skills",
@@ -293,7 +335,25 @@ window.__ModuleLoader__.load({
         repoEmptyFiltered: "No skills match in this repository",
         repoLocalHint: "Local folder",
         skillContent: "SKILL.md content",
-        contentTruncated: "Content is too long; showing the first 64 KiB"
+        contentTruncated: "Content is too long; showing the first 64 KiB",
+        collapseAll: "Collapse all",
+        expandAll: "Expand all",
+        updateBanner: "{count} repositories have new commits",
+        updateBannerOne: "1 repository has new commits",
+        updateAll: "Update all",
+        updatingAll: "Updating {done}/{total}…",
+        updateAllDone: "Updated {count} repositories",
+        updateAllFailed: "{count} repositories failed to update",
+        viewUpdates: "View",
+        dismissUpdate: "Dismiss",
+        updateConfirmTitle: "Update all",
+        updateConfirmText: "Update {count} repositories to their latest commits? Skills may reload briefly.",
+        logsDesc: "Local activity log, up to 300 entries.",
+        logsCount: "{count} entries",
+        logsCopy: "Copy",
+        logsFailed: "Copy failed — select the text manually",
+        levelWarn: "Warning",
+        levelError: "Error"
       }
     };
 
@@ -784,9 +844,80 @@ window.__ModuleLoader__.load({
         footer: [
           h("div", { key: "grow", className: "skm-grow" }),
           h(Button, { key: "cancel", variant: "ghost", onClick: props.onClose, disabled: busy }, t("cancel")),
-          h(Button, { key: "ok", variant: "danger", onClick: run, disabled: busy }, props.confirmLabel || t("confirmRemove"))
+          h(Button, { key: "ok", variant: props.danger === false ? "primary" : "danger", onClick: run, disabled: busy }, props.confirmLabel || t("confirmRemove"))
         ]
       }, h("p", { className: "skm-hint", style: { fontSize: "13px", lineHeight: "20px" } }, props.message));
+    }
+
+    // ── Activity log dialog ──────────────────────────────────────────────
+    function ActivityDialog(props) {
+      var t = props.t;
+      var _data = useState({ loading: true, error: "", list: [] });
+      var data = _data[0], setData = _data[1];
+      var _copied = useState(false);
+      var copied = _copied[0], setCopied = _copied[1];
+
+      function load() {
+        setData(function (previous) { return { loading: true, error: "", list: previous.list }; });
+        apiGet("/logs?limit=200").then(function (result) {
+          setData({ loading: false, error: "", list: result.events || [] });
+        }).catch(function (failure) {
+          setData({ loading: false, error: errorMessage(failure), list: [] });
+        });
+      }
+
+      useEffect(function () { load(); }, []);
+
+      function copyAll() {
+        var lines = data.list.slice().reverse().map(function (event) {
+          var level = String(event.level || "info").toUpperCase();
+          var skill = event.skill ? event.skill + " \u00b7 " : "";
+          return shortTime(event.at) + " [" + level + "] " + skill + event.message;
+        });
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(lines.join("\n"));
+            setCopied(true);
+            setTimeout(function () { setCopied(false); }, 1500);
+          }
+        } catch (error) {}
+      }
+
+      var rows = data.list.slice().reverse().map(function (event, index) {
+        var level = event.level === "warn" || event.level === "error" ? event.level : "info";
+        return h("div", { key: index, className: "skm-logRow" },
+          h("time", { className: "skm-logTime" }, shortTime(event.at)),
+          h("span", { className: "skm-logDot", "data-level": level, "aria-hidden": "true" }),
+          h("span", { className: "skm-logMsg" },
+            event.skill ? h("code", {}, event.skill) : null,
+            event.message));
+      });
+
+      var body;
+      if (data.loading && data.list.length === 0) {
+        body = h("div", { className: "skm-loading" }, h(Spinner, {}), t("loadingContent"));
+      } else if (data.error) {
+        body = h("div", { className: "skm-banner", "data-tone": "error", role: "alert" },
+          h(Icon, { name: "alert" }), h("div", {}, data.error));
+      } else if (data.list.length === 0) {
+        body = h("p", { className: "skm-hint" }, t("eventsEmpty"));
+      } else {
+        body = h("div", { className: "skm-logList" }, rows);
+      }
+
+      return h(Modal, {
+        open: true,
+        onClose: props.onClose,
+        title: t("events"),
+        description: t("logsDesc"),
+        closeLabel: t("close"),
+        footer: [
+          h("span", { key: "meta", className: "skm-logMeta" }, t("logsCount", { count: data.list.length })),
+          h(Button, { key: "refresh", variant: "ghost", icon: "refresh", onClick: load, disabled: data.loading }, t("refresh")),
+          h(Button, { key: "copy", variant: "outline", icon: "copy", onClick: copyAll, disabled: data.loading || data.list.length === 0 }, copied ? t("copied") : t("logsCopy")),
+          h(Button, { key: "close", variant: "ghost", onClick: props.onClose }, t("close"))
+        ]
+      }, body);
     }
 
     // ── Repository import dialog ─────────────────────────────────────────
@@ -933,10 +1064,32 @@ window.__ModuleLoader__.load({
       var eventsOpen = _eventsOpen[0], setEventsOpen = _eventsOpen[1];
       var _copied = useState("");
       var copied = _copied[0], setCopied = _copied[1];
-      var _collapsedRepos = useState({});
-      var collapsedRepos = _collapsedRepos[0], setCollapsedRepos = _collapsedRepos[1];
+      var _ui = useState(readUiStore);
+      var ui = _ui[0], setUi = _ui[1];
+      var _updateAll = useState(null);
+      var updateAll = _updateAll[0], setUpdateAll = _updateAll[1];
       var _repoDialog = useState(null);
       var repoDialog = _repoDialog[0], setRepoDialog = _repoDialog[1];
+      var inflightCheck = useRef(false);
+      var autoCheckAt = useRef(0);
+
+      function setUiStore(patch) {
+        setUi(function (previous) {
+          var next = Object.assign({}, previous, patch);
+          writeUiStore(next);
+          return next;
+        });
+      }
+
+      function setRepoOpen(repoId, open) {
+        setUi(function (previous) {
+          var map = Object.assign({}, previous.open || {});
+          if (open) map[repoId] = true; else delete map[repoId];
+          var next = Object.assign({}, previous, { open: map });
+          writeUiStore(next);
+          return next;
+        });
+      }
 
       var load = useCallback(function (silent) {
         return apiGet("/state").then(function (next) {
@@ -969,6 +1122,30 @@ window.__ModuleLoader__.load({
         var timer = setTimeout(function () { setAlert(null) }, 7000);
         return function () { clearTimeout(timer) };
       }, [alert]);
+
+      // Periodic upstream probe: once shortly after the panel opens (when the
+      // last stored check is stale) and then every 30 minutes while visible.
+      useEffect(function () {
+        if (!data) return undefined;
+        var gitRepos = (data.repos || []).filter(function (repo) { return repo.kind !== "local"; });
+        if (gitRepos.length === 0) return undefined;
+        var newest = 0;
+        for (var i = 0; i < gitRepos.length; i += 1) newest = Math.max(newest, Number(gitRepos[i].checkedAt) || 0);
+        var run = function () {
+          if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
+          var last = Math.max(newest, autoCheckAt.current || 0);
+          if (Date.now() - last < AUTO_CHECK_MS) return;
+          checkUpdates({ auto: true });
+        };
+        run();
+        var timer = setInterval(run, 60 * 1000);
+        var onVisible = function () { run(); };
+        if (typeof document !== "undefined") document.addEventListener("visibilitychange", onVisible);
+        return function () {
+          clearInterval(timer);
+          if (typeof document !== "undefined") document.removeEventListener("visibilitychange", onVisible);
+        };
+      }, [data !== null]);
 
       function setBusyFor(name, action) {
         setBusy(function (previous) {
@@ -1016,14 +1193,35 @@ window.__ModuleLoader__.load({
         }).then(function () { setBusyFor("__bulk__", null) });
       }
 
-      function checkUpdates() {
+      function checkUpdates(options) {
+        var auto = !!(options && options.auto);
+        if (inflightCheck.current) return;
+        inflightCheck.current = true;
         setBusyFor("__check__", "check");
         apiPost("/repos/check-updates", {}).then(function (result) {
-          setAlert({ tone: "ok", text: t("alertChecked", { count: (result.repos || []).length }) });
+          // Automatic probes stay silent: the update banner is the only prompt.
+          if (!auto) setAlert({ tone: "ok", text: t("alertChecked", { count: (result.repos || []).length }) });
+          return load(true);
+        }).catch(function (failure) {
+          if (!auto) setAlert({ tone: "error", text: t("actionFailed", { message: errorMessage(failure) }) });
+        }).then(function () {
+          autoCheckAt.current = Date.now();
+          inflightCheck.current = false;
+          setBusyFor("__check__", null);
+        });
+      }
+
+      function updateRepo(repo) {
+        var key = "__repo__" + repo.id;
+        if (busy[key]) return;
+        var label = repoLabel(repo.url, repo.kind);
+        setBusyFor(key, "update");
+        apiPost("/repos/update", { repoId: repo.id }).then(function () {
+          setAlert({ tone: "ok", text: t("alertUpdated", { name: label }) });
           return load(true);
         }).catch(function (failure) {
           setAlert({ tone: "error", text: t("actionFailed", { message: errorMessage(failure) }) });
-        }).then(function () { setBusyFor("__check__", null) });
+        }).then(function () { setBusyFor(key, null) });
       }
 
       function refreshFiles() {
@@ -1065,11 +1263,16 @@ window.__ModuleLoader__.load({
       }
 
       function toggleRepoOpen(repoId) {
-        setCollapsedRepos(function (previous) {
-          var next = Object.assign({}, previous);
-          if (next[repoId]) delete next[repoId]; else next[repoId] = true;
-          return next;
-        });
+        var open = !!ui.open && ui.open[repoId] === true;
+        setRepoOpen(repoId, !open);
+      }
+
+      function toggleAllRepos(open) {
+        var map = {};
+        if (open) {
+          for (var i = 0; i < repos.length; i += 1) map[repos[i].id] = true;
+        }
+        setUiStore({ open: map });
       }
 
       function toggleRepo(repo) {
@@ -1171,6 +1374,78 @@ window.__ModuleLoader__.load({
         return list;
       }, [filtered, repos]);
 
+      var searching = query.trim().length > 0;
+      var openMap = ui.open || {};
+      var openCount = 0;
+      for (var openIndex = 0; openIndex < repos.length; openIndex += 1) {
+        if (openMap[repos[openIndex].id] === true) openCount += 1;
+      }
+      var allOpen = repos.length > 0 && openCount === repos.length;
+      var updatedRepos = repos.filter(function (repo) { return repo.updateAvailable; });
+      var updateSignature = updatedRepos.map(function (repo) { return repo.id + ":" + repo.latestCommit; }).sort().join("|");
+      var showUpdateBanner = updatedRepos.length > 0 && updateSignature !== (ui.updateDismissed || "");
+      var lastCheckedAt = 0;
+      for (var checkIndex = 0; checkIndex < repos.length; checkIndex += 1) {
+        lastCheckedAt = Math.max(lastCheckedAt, Number(repos[checkIndex].checkedAt) || 0);
+      }
+
+      function askUpdateAll() {
+        if (updatedRepos.length === 0) return;
+        setConfirm({
+          title: t("updateConfirmTitle"),
+          message: t("updateConfirmText", { count: updatedRepos.length }),
+          confirmLabel: t("updateAll"),
+          danger: false,
+          onConfirm: function () {
+            // Close the confirmation immediately so the banner can show progress.
+            setConfirm(null);
+            runUpdateAll();
+            return Promise.resolve();
+          }
+        });
+      }
+
+      function runUpdateAll() {
+        var targets = updatedRepos.slice();
+        if (targets.length === 0) return Promise.resolve();
+        var failed = [];
+        setUpdateAll({ done: 0, total: targets.length, failed: [] });
+        var chain = Promise.resolve();
+        targets.forEach(function (repo, index) {
+          chain = chain.then(function () {
+            return apiPost("/repos/update", { repoId: repo.id }).catch(function (failure) {
+              failed.push({ id: repo.id, url: repo.url, error: errorMessage(failure) });
+            }).then(function () {
+              setUpdateAll({ done: index + 1, total: targets.length, failed: failed.slice() });
+            });
+          });
+        });
+        return chain.then(function () {
+          setUpdateAll(null);
+          setUiStore({ updateDismissed: "" });
+          setAlert(failed.length
+            ? { tone: "warn", text: t("updateAllFailed", { count: failed.length }) }
+            : { tone: "ok", text: t("updateAllDone", { count: targets.length }) });
+          return load(true);
+        });
+      }
+
+      function dismissUpdate() {
+        setUiStore({ updateDismissed: updateSignature });
+      }
+
+      function focusUpdates() {
+        var map = Object.assign({}, ui.open || {});
+        for (var i = 0; i < updatedRepos.length; i += 1) map[updatedRepos[i].id] = true;
+        setUiStore({ open: map, updateDismissed: "" });
+        var first = updatedRepos[0];
+        if (!first) return;
+        setTimeout(function () {
+          var element = typeof document !== "undefined" ? document.querySelector('[data-skm-repo="' + first.id + '"]') : null;
+          if (element && typeof element.scrollIntoView === "function") element.scrollIntoView({ block: "nearest", behavior: "smooth" });
+        }, 80);
+      }
+
       function renderDetail(skill) {
         var entry = content[skill.name];
         var actions = [
@@ -1264,7 +1539,7 @@ window.__ModuleLoader__.load({
 
       function renderRepoGroup(group) {
         var repo = group.repo || {};
-        var collapsed = !!collapsedRepos[repo.id];
+        var collapsed = searching ? false : !(ui.open && ui.open[repo.id] === true);
         var total = typeof repo.skills === "number" ? repo.skills : group.skills.length;
         var enabledCount = typeof repo.enabled === "number" ? repo.enabled : group.skills.filter(function (item) { return item.enabled }).length;
         var available = repo.available || null;
@@ -1281,7 +1556,7 @@ window.__ModuleLoader__.load({
         var countText = available
           ? t("repoAvailable", { available: available, imported: total })
           : t("repoStats", { enabled: enabledCount, imported: total });
-        return h("section", { key: repo.id, className: "skm-repo", "data-open": collapsed ? "false" : "true" },
+        return h("section", { key: repo.id, className: "skm-repo", "data-open": collapsed ? "false" : "true", "data-skm-repo": repo.id },
           h("header", { className: "skm-repoHead" },
             h("button", {
               type: "button",
@@ -1310,6 +1585,12 @@ window.__ModuleLoader__.load({
                 h("span", {}, countText),
                 h("span", { className: "skm-repoUrl", title: repo.url }, repo.url))),
             h("div", { className: "skm-repoActions" },
+              repo.updateAvailable && repo.kind !== "local" ? h(Button, {
+                variant: "outline",
+                icon: "download",
+                disabled: !!busy[repoKey],
+                onClick: function () { updateRepo(repo) }
+              }, busy[repoKey] === "update" ? t("updating") : t("update")) : null,
               h(Switch, {
                 checked: allOn,
                 mixed: mixed,
@@ -1367,8 +1648,20 @@ window.__ModuleLoader__.load({
         h("div", { className: "skm-toolbarEnd" },
           h(Button, { variant: "ghost", onClick: function () { bulk("all") }, disabled: !!busy.__bulk__ }, t("bulkEnable")),
           h(Button, { variant: "ghost", onClick: function () { bulk("none") }, disabled: !!busy.__bulk__ }, t("bulkDisable")),
-          h(Button, { variant: "ghost", icon: "download", onClick: checkUpdates, disabled: !!busy.__check__ }, busy.__check__ ? t("checking") : t("checkUpdates")),
-          h(Button, { variant: "ghost", icon: "clock", onClick: function () { setEventsOpen(!eventsOpen) } }, eventsOpen ? t("hideEvents") : t("showEvents"))));
+          h(Button, {
+            variant: "ghost",
+            icon: "chevron",
+            onClick: function () { toggleAllRepos(!allOpen) },
+            disabled: repos.length === 0
+          }, allOpen ? t("collapseAll") : t("expandAll")),
+          h(Button, {
+            variant: "ghost",
+            icon: "download",
+            title: lastCheckedAt ? t("checkedAt", { time: shortTime(lastCheckedAt) }) : undefined,
+            onClick: checkUpdates,
+            disabled: !!busy.__check__
+          }, busy.__check__ ? t("checking") : t("checkUpdates")),
+          h(Button, { variant: "ghost", icon: "clock", onClick: function () { setEventsOpen(true) } }, t("events"))));
 
       var toolbar = h("div", { className: "skm-toolbar" },
         h("label", { className: "skm-search" },
@@ -1411,6 +1704,19 @@ window.__ModuleLoader__.load({
         ? h("div", { className: "skm-banner", "data-tone": "warn" }, h(Icon, { name: "alert" }), h("div", {}, t("providerMissing")))
         : null;
 
+      var updateBanner = !showUpdateBanner ? null : h("div", { className: "skm-banner", "data-tone": "update", role: "status" },
+        h(Icon, { name: "download" }),
+        h("div", { className: "skm-bannerText" },
+          h("strong", {}, t(updatedRepos.length === 1 ? "updateBannerOne" : "updateBanner", { count: updatedRepos.length })),
+          updateAll ? h("span", { className: "skm-bannerSub" },
+            t("updatingAll", { done: updateAll.done, total: updateAll.total }),
+            updateAll.failed.length ? " · " + t("updateAllFailed", { count: updateAll.failed.length }) : null) : null),
+        h("div", { className: "skm-bannerActions" },
+          h(Button, { variant: "primary", icon: "download", onClick: askUpdateAll, disabled: !!updateAll },
+            updateAll ? t("updatingAll", { done: updateAll.done, total: updateAll.total }) : t("updateAll")),
+          h(Button, { variant: "ghost", onClick: focusUpdates, disabled: !!updateAll }, t("viewUpdates")),
+          h(IconButton, { icon: "x", label: t("dismissUpdate"), onClick: dismissUpdate })));
+
       var list;
       if (skills.length === 0) {
         list = h("div", { className: "skm-empty" },
@@ -1426,28 +1732,22 @@ window.__ModuleLoader__.load({
         list = h("div", { className: "skm-repos" }, groups.map(renderRepoGroup));
       }
 
-      var events = data.events || [];
-      var eventsBlock = eventsOpen ? h("div", { className: "skm-events" },
-        events.length === 0 ? h("div", {}, t("eventsEmpty")) : events.slice().reverse().map(function (event, index) {
-          return h("div", { key: index },
-            h("time", {}, shortTime(event.at)),
-            h("span", { style: { flex: "1 1 auto" } }, event.message));
-        })) : null;
-
       return h("section", { className: "skm-root" },
         header,
         summaryLine,
+        updateBanner,
         providerNotice,
         notice,
         toolbar,
         list,
-        eventsBlock,
         h("p", { className: "skm-hint" }, t("pathHint", { path: data.paths ? data.paths.manager : "" })),
+        eventsOpen ? h(ActivityDialog, { t: t, onClose: function () { setEventsOpen(false) } }) : null,
         importOpen ? h(ImportDialog, {
           t: t,
           onClose: function () { setImportOpen(false) },
           onDone: function (result) {
             setImportOpen(false);
+            if (result.repo) setRepoOpen(result.repo, true);
             setAlert({
               tone: result.skipped && result.skipped.length > 0 ? "warn" : "ok",
               text: t("alertInstalled", { installed: result.installed.length, skipped: (result.skipped || []).length })
@@ -1457,9 +1757,10 @@ window.__ModuleLoader__.load({
         }) : null,
         confirm ? h(ConfirmDialog, {
           t: t,
-          title: t("confirmRemoveTitle"),
+          title: confirm.title || t("confirmRemoveTitle"),
           message: confirm.message,
-          confirmLabel: t("confirmRemove"),
+          confirmLabel: confirm.confirmLabel || t("confirmRemove"),
+          danger: confirm.danger,
           onClose: function () { setConfirm(null) },
           onConfirm: confirm.onConfirm
         }) : null,

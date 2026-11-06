@@ -25,7 +25,7 @@
 </p>
 
 <p align="center">
-  <img src="https://cdn.jsdelivr.net/gh/hxlog/dsh-skills-tools@main/docs/screenshots/skills-overview.png" width="49%" alt="按仓库分组的技能列表" />
+  <img src="https://cdn.jsdelivr.net/gh/hxlog/dsh-skills-tools@main/docs/screenshots/skills-overview.png" width="49%" alt="仓库分组默认折叠，顶部显示更新横幅" />
   <img src="https://cdn.jsdelivr.net/gh/hxlog/dsh-skills-tools@main/docs/screenshots/skill-content.png" width="49%" alt="展开查看 SKILL.md 内容" />
 </p>
 
@@ -42,10 +42,17 @@
 | **Git 导入与快照** | 支持 https / ssh / 内网仓库、分支 / 标签 / 提交与子目录；导入的是只读快照，原目录和远端不会被修改。 |
 | **支持 monorepo 子目录（稀疏克隆，只拉目标子目录）** | 粘贴 `/tree/<ref>/<subdir>` 形式的大仓库地址即可导入 Next.js 这类 monorepo 的技能，无需下载整仓。 |
 | **检查更新** | 对比上游最新提交，确认后再切换快照；多个仓库可一次检查。 |
+| **全局折叠** | 顶部一键「全部展开 / 全部折叠」全部仓库分组；首次打开默认折叠，折叠状态记在本机，刷新后保持。 |
+| **自动检查更新** | 打开设置页自动检查一次，页面可见时每 30 分钟复查；发现新提交时顶部横幅提示，可「全部更新」或逐个更新。 |
+| **最近操作弹窗** | 工具栏打开独立弹窗，按时间倒序列出启用、停用、导入、更新与失败记录，可刷新、复制；重启后仍保留最近 300 条。 |
 
 <p align="center">
   <img src="https://cdn.jsdelivr.net/gh/hxlog/dsh-skills-tools@main/docs/screenshots/import-more.png" width="49%" alt="从仓库补齐剩余技能" />
   <img src="https://cdn.jsdelivr.net/gh/hxlog/dsh-skills-tools@main/docs/screenshots/import-dialog.png" width="49%" alt="导入技能" />
+</p>
+
+<p align="center">
+  <img src="https://cdn.jsdelivr.net/gh/hxlog/dsh-skills-tools@main/docs/screenshots/activity-log.png" width="70%" alt="最近操作弹窗" />
 </p>
 
 ## 🚀 安装
@@ -68,7 +75,7 @@ dsh plugin --profile web add dsh-skills-tools      # Web
 dsh plugin --profile desktop add dsh-skills-tools  # Desktop
 ```
 
-当前版本 **1.2.0**：支持 monorepo 子目录的稀疏克隆（只拉目标子目录），按仓库分组、仓库级开关与从快照补齐技能保持不变。
+当前版本 **1.3.0**：新增全局折叠（默认折叠、本机记忆）、自动检查更新与「全部更新」、独立的「最近操作」弹窗；1.2.0 的 monorepo 子目录稀疏克隆一并包含。
 
 > 升级包版本后需要重启 `dsh web` / 重启 DSH Desktop。
 >

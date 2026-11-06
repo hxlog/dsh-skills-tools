@@ -25,7 +25,7 @@
 </p>
 
 <p align="center">
-  <img src="https://cdn.jsdelivr.net/gh/hxlog/dsh-skills-tools@main/docs/screenshots/skills-overview.png" width="49%" alt="Skills grouped by repository" />
+  <img src="https://cdn.jsdelivr.net/gh/hxlog/dsh-skills-tools@main/docs/screenshots/skills-overview.png" width="49%" alt="Repository groups collapsed by default, with the update banner" />
   <img src="https://cdn.jsdelivr.net/gh/hxlog/dsh-skills-tools@main/docs/screenshots/skill-content.png" width="49%" alt="Expanded SKILL.md content" />
 </p>
 
@@ -42,10 +42,17 @@
 | **Git import and snapshots** | https / ssh / intranet repositories, branches, tags, commits and subdirectories. Imports are read-only snapshots; source repositories are never modified. |
 | **Monorepo subdirectories** | Sparse checkout fetches only the target subdirectory, so pasting a `/tree/<ref>/<subdir>` URL imports skills from large monorepos such as Next.js without downloading the whole repository. |
 | **Update checks** | Compare the remote head and switch snapshots only after a successful clone. |
+| **Collapse all** | One button expands or collapses every repository group. Groups start collapsed; the state is remembered in the browser and survives a reload. |
+| **Automatic update checks** | One check when the settings page opens, then every 30 minutes while visible. New commits show a banner with **Update all** or per-repository updates. |
+| **Activity dialog** | The toolbar opens a dedicated dialog listing enable, disable, import, update and failure events newest first, with refresh and copy; the last 300 entries survive a restart. |
 
 <p align="center">
   <img src="https://cdn.jsdelivr.net/gh/hxlog/dsh-skills-tools@main/docs/screenshots/import-more.png" width="49%" alt="Import remaining skills from a repository" />
   <img src="https://cdn.jsdelivr.net/gh/hxlog/dsh-skills-tools@main/docs/screenshots/import-dialog.png" width="49%" alt="Import skills" />
+</p>
+
+<p align="center">
+  <img src="https://cdn.jsdelivr.net/gh/hxlog/dsh-skills-tools@main/docs/screenshots/activity-log.png" width="70%" alt="Recent activity dialog" />
 </p>
 
 ## 🚀 Install
@@ -68,7 +75,7 @@ dsh plugin --profile web add dsh-skills-tools      # Web
 dsh plugin --profile desktop add dsh-skills-tools  # Desktop
 ```
 
-Current version **1.2.0**: sparse checkout for monorepo subdirectories, alongside grouped-by-repository management, the repository switch and completing skills from an existing snapshot.
+Current version **1.3.0**: global collapse (collapsed by default, remembered per browser), automatic update checks with **Update all**, and a dedicated Recent activity dialog — plus the 1.2.0 monorepo sparse checkout.
 
 > Restart `dsh web` / DSH Desktop after upgrading.
 >

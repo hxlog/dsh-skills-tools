@@ -56,7 +56,9 @@
 
 ### GET /logs?limit=100
 
-最近操作（环形缓冲，最多 300 条）。
+最近操作（环形缓冲，最多 300 条，按时间升序返回，客户端弹窗倒序展示）。
+
+v1.3 起 Host 启动时会从 `logs.jsonl` 尾部读回最多 300 条历史（最多读取 256 KiB，坏行忽略），因此重启后「最近操作」不再为空；单条超过上限时旧的自动淘汰。
 
 ### GET /skills/content?name=<skill>
 
@@ -153,7 +155,7 @@ url 可以是 Git URL、本机绝对路径或 file:// URL。ref 为空时使用�
 
 全部选中项成功写入后返回：
 
-    { "ok": true, "installed": ["git-commit"], "skipped": [], "snapshot": "code.comein.cn-ai-luban.git-0123abcd", "commit": "0123abcd…" }
+    { "ok": true, "repo": "repo_…", "installed": ["git-commit"], "skipped": [], "snapshot": "code.comein.cn-ai-luban.git-0123abcd", "commit": "0123abcd…" }
 
 同一仓库再次导入是幂等的；同名但来自其他仓库的技能会被跳过（除非先移除）。首次导入会记录 `subdir`，同一 URL 再次以非空 `subdir` 导入时会更新该字段。
 
@@ -193,9 +195,31 @@ url 可以是 Git URL、本机绝对路径或 file:// URL。ref 为空时使用�
 
 ### POST /repos/check-updates
 
-对所有仓库执行 git ls-remote，写入 latestCommit / checkedAt / lastError，不修改技能内容。
+对 Git 来源仓库执行 git ls-remote，写入 latestCommit / checkedAt / lastError，不修改技能内容，也不调用 provider 的 invalidate()。
 
-    { "ok": true, "repos": [{ "id": "repo_…", "commit": "…", "latestCommit": "…" }] }
+- 本机目录仓库（`kind: "local"`）直接跳过，不产生网络请求。
+- 并发上限 4，单仓库超时 20 秒；某个仓库不可达只记录该仓库的 `error`，整体仍返回 `ok: true`。
+- 有更新或检查失败时写入一条操作日志（info / warn）。
+
+    {
+      "ok": true,
+      "updates": 2,
+      "failed": 0,
+      "checkedAt": 1762300000000,
+      "repos": [
+        { "id": "repo_…", "commit": "…", "latestCommit": "…", "updateAvailable": true, "error": null }
+      ]
+    }
+
+客户端在打开设置页后（距上次检查 ≥ 30 分钟）自动调用一次，并在页面可见时每 30 分钟复查；手动按钮不受节流限制。自动检查失败不弹提示，只写日志。
+
+### POST /repos/update
+
+    { "repoId": "repo_…" }
+
+从上游重新克隆该仓库，生成新快照并切换，刷新该仓库所有技能元数据，并写一条操作日志。这是「全部更新」与仓库卡片「更新」按钮使用的接口（单个仓库一次请求，客户端串行批量调用）。
+
+    { "ok": true, "repo": "repo_…", "snapshot": "acme-skills-0123abcd", "commit": "0123abcd…", "ref": "main" }
 
 ### POST /refresh
 

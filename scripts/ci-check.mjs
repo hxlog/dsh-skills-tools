@@ -94,6 +94,10 @@ check('client is a parseable classic bundle', function () {
   assert.ok(client.includes('order: 19'))
   assert.ok(client.includes('var API_BASE = "/skills-tools/api"'))
   assert.ok(client.includes('exports.inject = inject'))
+  // Catch a stale client/client.js: the bundle must be rebuilt from src.
+  assert.ok(client.includes('collapseAll: "全部折叠"'), 'client bundle is stale: run node scripts/build-client.mjs')
+  assert.ok(client.includes('logsDesc:'), 'client bundle is stale: activity dialog missing')
+  assert.ok(client.includes('AUTO_CHECK_MS'), 'client bundle is stale: automatic update probe missing')
 })
 
 check('i18n dictionaries have identical keys and both nav labels', function () {

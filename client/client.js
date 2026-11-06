@@ -17,6 +17,8 @@ window.__ModuleLoader__.load({
     var NS = "skillsManager";
     var API_BASE = "/skills-tools/api";
     var POLL_INTERVAL_MS = 15000;
+    var AUTO_CHECK_MS = 30 * 60 * 1000;
+    var UI_STORE_KEY = "dsh-skills-tools:ui:v1";
     var STYLE_ID = "dsh-skills-tools/SkillsManager.module.css";
     var SKILL_NAME_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
@@ -28,7 +30,7 @@ window.__ModuleLoader__.load({
     var useCallback = React.useCallback;
     var useRef = React.useRef;
 
-    var CSS_TEXT = "/* dsh-skills-tools — Settings -> Skills panel.\n   Flat setting rows (no card frames), token-driven colours, light/dark safe. */\n.skm-root, .skm-modal {\n  --skm-fs-title: 18px;\n  --skm-fs-body: 14px;\n  --skm-fs-desc: 13px;\n  --skm-fs-caption: 12px;\n  --skm-fs-tiny: 11px;\n  --skm-fs-tag: 10px;\n  --skm-line-title: 26px;\n  --skm-line-body: 20px;\n  --skm-line-desc: 18px;\n  --skm-gap: 12px;\n  --skm-gap-sm: 8px;\n  --skm-gap-xs: 6px;\n  --skm-hairline: .5px;\n  --skm-focus: var(--dsw-focus-ring-width, 2px) solid var(--dsw-focus-ring-color, var(--dsw-alias-state-business-primary));\n  color: var(--dsw-alias-label-primary);\n  font-family: var(--dsw-font-family, inherit);\n  font-size: var(--skm-fs-body);\n  line-height: var(--skm-line-body);\n}\n.skm-root *, .skm-modal *, .skm-root *::before, .skm-modal *::before { box-sizing: border-box; }\n.skm-root { display: flex; flex-direction: column; gap: var(--skm-gap); max-width: 820px; padding-top: 16px; }\n\n.skm-headRow { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--skm-gap); flex-wrap: wrap; }\n.skm-headText { display: flex; flex-direction: column; gap: 2px; min-width: 0; }\n.skm-heading { margin: 0; font-size: var(--skm-fs-title); font-weight: 600; line-height: var(--skm-line-title); }\n.skm-intro { margin: 0; color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-desc); line-height: var(--skm-line-desc); }\n.skm-headActions { display: flex; align-items: center; gap: var(--skm-gap-sm); flex: none; }\n.skm-summary { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-caption); }\n.skm-summary strong { color: var(--dsw-alias-label-secondary); font-weight: 600; }\n\n.skm-toolbar { display: flex; align-items: center; justify-content: space-between; gap: var(--skm-gap-sm); flex-wrap: wrap; }\n.skm-search { display: flex; align-items: center; gap: 6px; flex: 1 1 220px; max-width: 320px; height: 30px; padding: 0 8px; border: var(--skm-hairline) solid var(--dsw-alias-border-l1); border-radius: 7px; background: var(--dsw-alias-bg-layer-1); color: var(--dsw-alias-label-tertiary); transition: border-color 120ms ease; }\n.skm-search:focus-within { border-color: var(--dsw-alias-label-caption); }\n.skm-search input { flex: 1 1 auto; min-width: 0; height: 100%; padding: 0; border: 0; outline: 0; background: transparent; color: var(--dsw-alias-label-primary); font: inherit; font-size: var(--skm-fs-desc); }\n.skm-search input::placeholder { color: var(--dsw-alias-label-tertiary); }\n.skm-toolbarEnd { display: flex; align-items: center; gap: var(--skm-gap-sm); flex-wrap: wrap; }\n.skm-seg { display: inline-flex; align-items: center; padding: 2px; border-radius: 7px; background: var(--dsw-alias-bg-layer-1); border: var(--skm-hairline) solid var(--dsw-alias-border-l1); }\n.skm-segBtn { height: 24px; padding: 0 10px; border: 0; border-radius: 5px; background: none; color: var(--dsw-alias-label-tertiary); font: inherit; font-size: var(--skm-fs-caption); cursor: pointer; }\n.skm-segBtn[data-active=\"true\"] { background: var(--dsw-alias-interactive-bg-hover); color: var(--dsw-alias-label-primary); }\n.skm-segBtn:hover { color: var(--dsw-alias-label-primary); }\n\n.skm-btn { display: inline-flex; align-items: center; justify-content: center; gap: 5px; height: 30px; padding: 0 12px; border-radius: 7px; border: var(--skm-hairline) solid transparent; font: inherit; font-size: var(--skm-fs-caption); font-weight: 500; line-height: 1; cursor: pointer; white-space: nowrap; transition: background 120ms ease, border-color 120ms ease, color 120ms ease; }\n.skm-btn:focus-visible { outline: var(--skm-focus); outline-offset: 1px; }\n.skm-btn[disabled] { opacity: .5; cursor: not-allowed; }\n.skm-btn--primary { background: var(--dsw-alias-state-business-primary); color: var(--dsw-alias-label-inverse, #fff); }\n.skm-btn--primary:hover:not([disabled]) { background: var(--dsw-alias-state-business-primary-hover, var(--dsw-alias-state-business-primary)); opacity: .92; }\n.skm-btn--outline { background: transparent; border-color: var(--dsw-alias-border-l1); color: var(--dsw-alias-label-secondary); }\n.skm-btn--outline:hover:not([disabled]) { background: var(--dsw-alias-interactive-bg-hover); color: var(--dsw-alias-label-primary); }\n.skm-btn--ghost { background: none; color: var(--dsw-alias-label-tertiary); }\n.skm-btn--ghost:hover:not([disabled]) { background: var(--dsw-alias-interactive-bg-hover); color: var(--dsw-alias-label-primary); }\n.skm-btn--danger { background: none; color: var(--dsw-alias-state-error-primary); border-color: var(--dsw-alias-border-l1); }\n.skm-btn--danger:hover:not([disabled]) { background: var(--dsw-alias-state-error-primary); color: #fff; border-color: transparent; }\n.skm-ibtn { width: 28px; height: 28px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: 6px; background: none; color: var(--dsw-alias-label-caption); cursor: pointer; }\n.skm-ibtn:hover:not([disabled]) { background: var(--dsw-alias-interactive-bg-hover); color: var(--dsw-alias-label-primary); }\n.skm-ibtn[disabled] { opacity: .4; cursor: not-allowed; }\n.skm-ibtn[data-danger=\"true\"]:hover:not([disabled]) { color: var(--dsw-alias-state-error-primary); }\n\n.skm-banner { display: flex; gap: 8px; align-items: flex-start; padding: 9px 11px; border-radius: 7px; background: var(--dsw-alias-bg-layer-1); border: var(--skm-hairline) solid var(--dsw-alias-border-l1); color: var(--dsw-alias-label-secondary); font-size: var(--skm-fs-caption); line-height: var(--skm-line-desc); }\n.skm-banner[data-tone=\"error\"] { color: var(--dsw-alias-state-error-primary); }\n.skm-banner[data-tone=\"warn\"] { color: var(--dsw-alias-label-secondary); }\n.skm-banner svg { flex: none; margin-top: 1px; }\n\n.skm-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }\n.skm-row { border-bottom: var(--skm-hairline) solid var(--dsw-alias-border-l1); }\n.skm-list > .skm-row:last-child { border-bottom: 0; }\n.skm-rowHead { display: flex; align-items: flex-start; gap: 10px; padding: 13px 0; }\n.skm-rowMain { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px; padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }\n.skm-nameRow { display: flex; align-items: center; gap: 6px; min-width: 0; flex-wrap: wrap; }\n.skm-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--skm-fs-body); font-weight: 500; line-height: var(--skm-line-body); }\n.skm-row[data-off=\"true\"] .skm-name { color: var(--dsw-alias-label-secondary); }\n.skm-desc { margin: 0; color: var(--dsw-alias-label-caption); font-size: var(--skm-fs-caption); line-height: var(--skm-line-desc); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }\n.skm-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-tiny); line-height: 16px; }\n.skm-meta code { font-family: var(--dsw-font-family-mono, ui-monospace, SFMono-Regular, Menlo, monospace); font-size: var(--skm-fs-tiny); }\n.skm-tag { display: inline-flex; align-items: center; height: 18px; padding: 0 6px; border-radius: 4px; border: var(--skm-hairline) solid var(--dsw-alias-border-l1); color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-tag); line-height: 1; white-space: nowrap; }\n.skm-tag[data-tone=\"accent\"] { color: var(--dsw-alias-state-business-primary); border-color: currentColor; }\n.skm-tag[data-tone=\"warn\"] { color: var(--dsw-alias-state-warning-primary, #c98a00); border-color: currentColor; }\n.skm-tag[data-tone=\"error\"] { color: var(--dsw-alias-state-error-primary); border-color: currentColor; }\n.skm-rowActions { flex: none; display: flex; align-items: center; gap: 2px; padding-top: 1px; }\n.skm-chevron { display: inline-flex; color: var(--dsw-alias-label-tertiary); transition: transform 120ms ease; }\n.skm-chevron[data-open=\"true\"] { transform: rotate(90deg); }\n\n.skm-switch { position: relative; flex: none; width: 32px; height: 18px; margin-top: 2px; padding: 0; border: 0; border-radius: 999px; background: var(--dsw-alias-border-l2, var(--dsw-alias-border-l1)); cursor: pointer; transition: background 150ms ease; }\n.skm-switch[aria-checked=\"true\"] { background: var(--dsw-alias-state-business-primary); }\n.skm-switch::after { content: \"\"; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.18); transition: transform 150ms ease; }\n.skm-switch[aria-checked=\"true\"]::after { transform: translateX(14px); }\n.skm-switch:focus-visible { outline: var(--skm-focus); outline-offset: 2px; }\n.skm-switch[disabled] { opacity: .5; cursor: not-allowed; }\n\n.skm-detail { display: flex; flex-direction: column; gap: 10px; margin: 2px 0 14px; padding: 12px; border-radius: 8px; background: var(--dsw-alias-bg-layer-1); }\n.skm-detailGrid { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 5px 10px; font-size: var(--skm-fs-caption); line-height: var(--skm-line-desc); }\n.skm-detailGrid dt { color: var(--dsw-alias-label-tertiary); }\n.skm-detailGrid dd { margin: 0; min-width: 0; color: var(--dsw-alias-label-secondary); overflow-wrap: anywhere; }\n.skm-detailGrid code { font-family: var(--dsw-font-family-mono, ui-monospace, SFMono-Regular, Menlo, monospace); font-size: var(--skm-fs-tiny); }\n.skm-detailActions { display: flex; align-items: center; gap: var(--skm-gap-sm); flex-wrap: wrap; }\n.skm-detailActions .skm-grow { flex: 1 1 auto; }\n.skm-codeWrap { position: relative; }\n.skm-code { margin: 0; max-height: 300px; overflow: auto; padding: 10px 12px; border-radius: 7px; border: var(--skm-hairline) solid var(--dsw-alias-border-l1); background: var(--dsw-alias-bg-layer-2, var(--dsw-alias-bg-layer-1)); color: var(--dsw-alias-label-secondary); font-family: var(--dsw-font-family-mono, ui-monospace, SFMono-Regular, Menlo, monospace); font-size: var(--skm-fs-tiny); line-height: 1.55; white-space: pre-wrap; word-break: break-word; }\n.skm-codeNote { margin: 0; color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-tiny); }\n.skm-inlineErr { margin: 0; color: var(--dsw-alias-state-error-primary); font-size: var(--skm-fs-caption); }\n\n.skm-empty { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 40px 16px; color: var(--dsw-alias-label-tertiary); text-align: center; }\n.skm-emptyTitle { color: var(--dsw-alias-label-secondary); font-size: var(--skm-fs-body); font-weight: 500; }\n.skm-emptyText { max-width: 420px; font-size: var(--skm-fs-caption); line-height: var(--skm-line-desc); }\n.skm-detailsSummary { cursor: pointer; color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-caption); }\n.skm-events { display: flex; flex-direction: column; gap: 4px; margin: 6px 0 0; padding: 10px 12px; border-radius: 7px; background: var(--dsw-alias-bg-layer-1); font-size: var(--skm-fs-tiny); line-height: 16px; color: var(--dsw-alias-label-tertiary); max-height: 220px; overflow: auto; }\n.skm-events div { display: flex; gap: 8px; }\n.skm-events time { flex: none; color: var(--dsw-alias-label-tertiary); font-variant-numeric: tabular-nums; }\n\n.skm-spin { animation: skm-spin 900ms linear infinite; }\n@keyframes skm-spin { to { transform: rotate(360deg); } }\n.skm-loading { display: flex; align-items: center; gap: 6px; padding: 24px 0; color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-caption); }\n\n/* ── Modal (portalled by React into the overlay root) ─────────────────── */\n.skm-overlay { position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center; padding: 24px; background: rgba(0,0,0,.38); }\n.skm-modal { width: min(640px, 100%); max-height: 82vh; display: flex; flex-direction: column; border-radius: 12px; background: var(--dsw-alias-bg-layer-0, #fff); border: var(--skm-hairline) solid var(--dsw-alias-border-l1); box-shadow: 0 18px 48px rgba(0,0,0,.28); overflow: hidden; }\n.skm-modal[data-width=\"wide\"] { width: min(780px, 100%); }\n.skm-modalHead { display: flex; align-items: flex-start; gap: var(--skm-gap); padding: 16px 18px 10px; }\n.skm-modalTitle { margin: 0; flex: 1 1 auto; font-size: var(--skm-fs-body); font-weight: 600; line-height: var(--skm-line-body); }\n.skm-modalDesc { margin: 4px 0 0; color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-caption); line-height: var(--skm-line-desc); }\n.skm-modalBody { padding: 4px 18px 10px; overflow: auto; display: flex; flex-direction: column; gap: 10px; }\n.skm-modalFooter { display: flex; align-items: center; justify-content: flex-end; gap: var(--skm-gap-sm); padding: 12px 18px 16px; border-top: var(--skm-hairline) solid var(--dsw-alias-border-l1); }\n.skm-modalFooter .skm-grow { flex: 1 1 auto; }\n\n.skm-field { display: flex; flex-direction: column; gap: 5px; }\n.skm-fieldLabel { color: var(--dsw-alias-label-secondary); font-size: var(--skm-fs-caption); font-weight: 500; }\n.skm-input { width: 100%; height: 32px; padding: 0 10px; border: var(--skm-hairline) solid var(--dsw-alias-border-l1); border-radius: 7px; background: var(--dsw-alias-bg-layer-1); color: var(--dsw-alias-label-primary); font: inherit; font-size: var(--skm-fs-desc); outline: 0; }\n.skm-input:focus { border-color: var(--dsw-alias-state-business-primary); }\n.skm-hint { margin: 0; color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-tiny); line-height: 16px; }\n.skm-fieldRow { display: flex; gap: var(--skm-gap-sm); }\n.skm-fieldRow .skm-field { flex: 1 1 0; min-width: 0; }\n\n.skm-scanHead { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; color: var(--dsw-alias-label-secondary); font-size: var(--skm-fs-caption); }\n.skm-scanList { display: flex; flex-direction: column; gap: 2px; max-height: 280px; overflow: auto; margin: 0 -4px; padding: 0 4px; }\n.skm-scanRow { display: flex; align-items: flex-start; gap: 8px; padding: 7px 4px; border-radius: 6px; }\n.skm-scanRow:hover { background: var(--dsw-alias-interactive-bg-hover); }\n.skm-scanRow input[type=\"checkbox\"] { margin: 3px 0 0; accent-color: var(--dsw-alias-state-business-primary); }\n.skm-scanMain { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 1px; }\n.skm-scanName { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: var(--skm-fs-caption); font-weight: 500; }\n.skm-scanPath { color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-tiny); overflow-wrap: anywhere; }\n.skm-scanNameInput { width: 150px; height: 22px; padding: 0 6px; border: var(--skm-hairline) solid var(--dsw-alias-border-l1); border-radius: 5px; background: var(--dsw-alias-bg-layer-0, transparent); color: var(--dsw-alias-label-primary); font: inherit; font-size: var(--skm-fs-tiny); }\n.skm-scanRow[data-invalid=\"true\"] { opacity: .62; }\n.skm-scanRow[data-invalid=\"true\"] .skm-scanName { text-decoration: line-through; }\n@media (max-width: 640px) {\n  .skm-root { padding-top: 10px; }\n  .skm-headActions { width: 100%; justify-content: flex-end; }\n  .skm-search { max-width: none; }\n  .skm-detailGrid { grid-template-columns: minmax(0, 1fr); gap: 1px 0; }\n  .skm-detailGrid dt { margin-top: 5px; }\n  .skm-fieldRow { flex-direction: column; }\n  .skm-modal { max-height: 88vh; }\n}\n\n/* ── Repository groups (v1.1) ─────────────────────────────────────────── */\n.skm-repos { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }\n.skm-repo { border: var(--skm-hairline) solid var(--dsw-alias-border-l1); border-radius: 10px; background: var(--dsw-alias-bg-layer-1, transparent); overflow: hidden; }\n.skm-repoHead { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: var(--dsw-alias-bg-layer-2, transparent); }\n.skm-repo[data-open=\"true\"] .skm-repoHead { border-bottom: var(--skm-hairline) solid var(--dsw-alias-border-l1); }\n.skm-repoToggle { flex: none; transition: transform 120ms ease; }\n.skm-repoToggle[data-open=\"true\"] { transform: rotate(90deg); }\n.skm-repoIcon { display: inline-flex; color: var(--dsw-alias-label-caption); }\n.skm-repoTitle { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px; }\n.skm-repoNameRow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 0; }\n.skm-repoName { max-width: 48%; overflow: hidden; font-size: 13px; font-weight: 600; color: var(--dsw-alias-label-primary); text-overflow: ellipsis; white-space: nowrap; }\n.skm-repoLink { display: inline-flex; padding: 2px; border-radius: 4px; color: var(--dsw-alias-label-caption); }\n.skm-repoLink:hover { color: var(--dsw-alias-state-business-primary); background: var(--dsw-alias-interactive-bg-hover); }\n.skm-repoBadges { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }\n.skm-repoMeta { display: flex; align-items: center; gap: 10px; min-width: 0; font-size: 12px; color: var(--dsw-alias-label-caption); }\n.skm-repoUrl { max-width: 100%; overflow: hidden; opacity: .85; text-overflow: ellipsis; white-space: nowrap; }\n.skm-repoActions { display: flex; align-items: center; gap: 6px; flex: none; }\n.skm-repoBody { padding: 0 12px; }\n.skm-repoBody .skm-list { padding: 2px 0; }\n.skm-repoBody .skm-rowHead { padding: 11px 0; }\n.skm-chevronBtn { transition: transform 120ms ease; }\n.skm-chevronBtn[data-open=\"true\"] { transform: rotate(90deg); }\n.skm-switch[data-mixed=\"true\"] { background: var(--dsw-alias-state-warn-primary, var(--dsw-alias-state-business-primary)); }\n.skm-switch[data-mixed=\"true\"]::after { top: 8px; left: 2px; width: 10px; height: 2px; border-radius: 1px; transform: translateX(9px); }\n.skm-scanRow[data-disabled=\"true\"] { opacity: .55; }\n.skm-scanRow[data-disabled=\"true\"] .skm-scanName { text-decoration: none; }\n";
+    var CSS_TEXT = "/* dsh-skills-tools — Settings -> Skills panel.\n   Flat setting rows (no card frames), token-driven colours, light/dark safe. */\n.skm-root, .skm-modal {\n  --skm-fs-title: 18px;\n  --skm-fs-body: 14px;\n  --skm-fs-desc: 13px;\n  --skm-fs-caption: 12px;\n  --skm-fs-tiny: 11px;\n  --skm-fs-tag: 10px;\n  --skm-line-title: 26px;\n  --skm-line-body: 20px;\n  --skm-line-desc: 18px;\n  --skm-gap: 12px;\n  --skm-gap-sm: 8px;\n  --skm-gap-xs: 6px;\n  --skm-hairline: .5px;\n  --skm-focus: var(--dsw-focus-ring-width, 2px) solid var(--dsw-focus-ring-color, var(--dsw-alias-state-business-primary));\n  color: var(--dsw-alias-label-primary);\n  font-family: var(--dsw-font-family, inherit);\n  font-size: var(--skm-fs-body);\n  line-height: var(--skm-line-body);\n}\n.skm-root *, .skm-modal *, .skm-root *::before, .skm-modal *::before { box-sizing: border-box; }\n.skm-root { display: flex; flex-direction: column; gap: var(--skm-gap); max-width: 820px; padding-top: 16px; }\n\n.skm-headRow { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--skm-gap); flex-wrap: wrap; }\n.skm-headText { display: flex; flex-direction: column; gap: 2px; min-width: 0; }\n.skm-heading { margin: 0; font-size: var(--skm-fs-title); font-weight: 600; line-height: var(--skm-line-title); }\n.skm-intro { margin: 0; color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-desc); line-height: var(--skm-line-desc); }\n.skm-headActions { display: flex; align-items: center; gap: var(--skm-gap-sm); flex: none; }\n.skm-summary { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-caption); }\n.skm-summary strong { color: var(--dsw-alias-label-secondary); font-weight: 600; }\n\n.skm-toolbar { display: flex; align-items: center; justify-content: space-between; gap: var(--skm-gap-sm); flex-wrap: wrap; }\n.skm-search { display: flex; align-items: center; gap: 6px; flex: 1 1 220px; max-width: 320px; height: 30px; padding: 0 8px; border: var(--skm-hairline) solid var(--dsw-alias-border-l1); border-radius: 7px; background: var(--dsw-alias-bg-layer-1); color: var(--dsw-alias-label-tertiary); transition: border-color 120ms ease; }\n.skm-search:focus-within { border-color: var(--dsw-alias-label-caption); }\n.skm-search input { flex: 1 1 auto; min-width: 0; height: 100%; padding: 0; border: 0; outline: 0; background: transparent; color: var(--dsw-alias-label-primary); font: inherit; font-size: var(--skm-fs-desc); }\n.skm-search input::placeholder { color: var(--dsw-alias-label-tertiary); }\n.skm-toolbarEnd { display: flex; align-items: center; gap: var(--skm-gap-sm); flex-wrap: wrap; }\n.skm-seg { display: inline-flex; align-items: center; padding: 2px; border-radius: 7px; background: var(--dsw-alias-bg-layer-1); border: var(--skm-hairline) solid var(--dsw-alias-border-l1); }\n.skm-segBtn { height: 24px; padding: 0 10px; border: 0; border-radius: 5px; background: none; color: var(--dsw-alias-label-tertiary); font: inherit; font-size: var(--skm-fs-caption); cursor: pointer; }\n.skm-segBtn[data-active=\"true\"] { background: var(--dsw-alias-interactive-bg-hover); color: var(--dsw-alias-label-primary); }\n.skm-segBtn:hover { color: var(--dsw-alias-label-primary); }\n\n.skm-btn { display: inline-flex; align-items: center; justify-content: center; gap: 5px; height: 30px; padding: 0 12px; border-radius: 7px; border: var(--skm-hairline) solid transparent; font: inherit; font-size: var(--skm-fs-caption); font-weight: 500; line-height: 1; cursor: pointer; white-space: nowrap; transition: background 120ms ease, border-color 120ms ease, color 120ms ease; }\n.skm-btn:focus-visible { outline: var(--skm-focus); outline-offset: 1px; }\n.skm-btn[disabled] { opacity: .5; cursor: not-allowed; }\n.skm-btn--primary { background: var(--dsw-alias-state-business-primary); color: var(--dsw-alias-label-inverse, #fff); }\n.skm-btn--primary:hover:not([disabled]) { background: var(--dsw-alias-state-business-primary-hover, var(--dsw-alias-state-business-primary)); opacity: .92; }\n.skm-btn--outline { background: transparent; border-color: var(--dsw-alias-border-l1); color: var(--dsw-alias-label-secondary); }\n.skm-btn--outline:hover:not([disabled]) { background: var(--dsw-alias-interactive-bg-hover); color: var(--dsw-alias-label-primary); }\n.skm-btn--ghost { background: none; color: var(--dsw-alias-label-tertiary); }\n.skm-btn--ghost:hover:not([disabled]) { background: var(--dsw-alias-interactive-bg-hover); color: var(--dsw-alias-label-primary); }\n.skm-btn--danger { background: none; color: var(--dsw-alias-state-error-primary); border-color: var(--dsw-alias-border-l1); }\n.skm-btn--danger:hover:not([disabled]) { background: var(--dsw-alias-state-error-primary); color: #fff; border-color: transparent; }\n.skm-ibtn { width: 28px; height: 28px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: 6px; background: none; color: var(--dsw-alias-label-caption); cursor: pointer; }\n.skm-ibtn:hover:not([disabled]) { background: var(--dsw-alias-interactive-bg-hover); color: var(--dsw-alias-label-primary); }\n.skm-ibtn[disabled] { opacity: .4; cursor: not-allowed; }\n.skm-ibtn[data-danger=\"true\"]:hover:not([disabled]) { color: var(--dsw-alias-state-error-primary); }\n\n.skm-banner { display: flex; gap: 8px; align-items: flex-start; padding: 9px 11px; border-radius: 7px; background: var(--dsw-alias-bg-layer-1); border: var(--skm-hairline) solid var(--dsw-alias-border-l1); color: var(--dsw-alias-label-secondary); font-size: var(--skm-fs-caption); line-height: var(--skm-line-desc); }\n.skm-banner[data-tone=\"error\"] { color: var(--dsw-alias-state-error-primary); }\n.skm-banner[data-tone=\"warn\"] { color: var(--dsw-alias-label-secondary); }\n.skm-banner[data-tone=\"update\"] { border-color: var(--dsw-alias-state-warning-primary, #c98a00); }\n.skm-banner svg { flex: none; margin-top: 1px; }\n.skm-bannerText { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }\n.skm-bannerText strong { font-weight: 600; color: var(--dsw-alias-label-primary); }\n.skm-bannerSub { color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-tiny); line-height: 16px; }\n.skm-bannerActions { display: flex; align-items: center; gap: var(--skm-gap-sm); flex: none; flex-wrap: wrap; }\n\n.skm-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }\n.skm-row { border-bottom: var(--skm-hairline) solid var(--dsw-alias-border-l1); }\n.skm-list > .skm-row:last-child { border-bottom: 0; }\n.skm-rowHead { display: flex; align-items: flex-start; gap: 10px; padding: 13px 0; }\n.skm-rowMain { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px; padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }\n.skm-nameRow { display: flex; align-items: center; gap: 6px; min-width: 0; flex-wrap: wrap; }\n.skm-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--skm-fs-body); font-weight: 500; line-height: var(--skm-line-body); }\n.skm-row[data-off=\"true\"] .skm-name { color: var(--dsw-alias-label-secondary); }\n.skm-desc { margin: 0; color: var(--dsw-alias-label-caption); font-size: var(--skm-fs-caption); line-height: var(--skm-line-desc); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }\n.skm-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-tiny); line-height: 16px; }\n.skm-meta code { font-family: var(--dsw-font-family-mono, ui-monospace, SFMono-Regular, Menlo, monospace); font-size: var(--skm-fs-tiny); }\n.skm-tag { display: inline-flex; align-items: center; height: 18px; padding: 0 6px; border-radius: 4px; border: var(--skm-hairline) solid var(--dsw-alias-border-l1); color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-tag); line-height: 1; white-space: nowrap; }\n.skm-tag[data-tone=\"accent\"] { color: var(--dsw-alias-state-business-primary); border-color: currentColor; }\n.skm-tag[data-tone=\"warn\"] { color: var(--dsw-alias-state-warning-primary, #c98a00); border-color: currentColor; }\n.skm-tag[data-tone=\"error\"] { color: var(--dsw-alias-state-error-primary); border-color: currentColor; }\n.skm-rowActions { flex: none; display: flex; align-items: center; gap: 2px; padding-top: 1px; }\n.skm-chevron { display: inline-flex; color: var(--dsw-alias-label-tertiary); transition: transform 120ms ease; }\n.skm-chevron[data-open=\"true\"] { transform: rotate(90deg); }\n\n.skm-switch { position: relative; flex: none; width: 32px; height: 18px; margin-top: 2px; padding: 0; border: 0; border-radius: 999px; background: var(--dsw-alias-border-l2, var(--dsw-alias-border-l1)); cursor: pointer; transition: background 150ms ease; }\n.skm-switch[aria-checked=\"true\"] { background: var(--dsw-alias-state-business-primary); }\n.skm-switch::after { content: \"\"; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.18); transition: transform 150ms ease; }\n.skm-switch[aria-checked=\"true\"]::after { transform: translateX(14px); }\n.skm-switch:focus-visible { outline: var(--skm-focus); outline-offset: 2px; }\n.skm-switch[disabled] { opacity: .5; cursor: not-allowed; }\n\n.skm-detail { display: flex; flex-direction: column; gap: 10px; margin: 2px 0 14px; padding: 12px; border-radius: 8px; background: var(--dsw-alias-bg-layer-1); }\n.skm-detailGrid { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 5px 10px; font-size: var(--skm-fs-caption); line-height: var(--skm-line-desc); }\n.skm-detailGrid dt { color: var(--dsw-alias-label-tertiary); }\n.skm-detailGrid dd { margin: 0; min-width: 0; color: var(--dsw-alias-label-secondary); overflow-wrap: anywhere; }\n.skm-detailGrid code { font-family: var(--dsw-font-family-mono, ui-monospace, SFMono-Regular, Menlo, monospace); font-size: var(--skm-fs-tiny); }\n.skm-detailActions { display: flex; align-items: center; gap: var(--skm-gap-sm); flex-wrap: wrap; }\n.skm-detailActions .skm-grow { flex: 1 1 auto; }\n.skm-codeWrap { position: relative; }\n.skm-code { margin: 0; max-height: 300px; overflow: auto; padding: 10px 12px; border-radius: 7px; border: var(--skm-hairline) solid var(--dsw-alias-border-l1); background: var(--dsw-alias-bg-layer-2, var(--dsw-alias-bg-layer-1)); color: var(--dsw-alias-label-secondary); font-family: var(--dsw-font-family-mono, ui-monospace, SFMono-Regular, Menlo, monospace); font-size: var(--skm-fs-tiny); line-height: 1.55; white-space: pre-wrap; word-break: break-word; }\n.skm-codeNote { margin: 0; color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-tiny); }\n.skm-inlineErr { margin: 0; color: var(--dsw-alias-state-error-primary); font-size: var(--skm-fs-caption); }\n\n.skm-empty { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 40px 16px; color: var(--dsw-alias-label-tertiary); text-align: center; }\n.skm-emptyTitle { color: var(--dsw-alias-label-secondary); font-size: var(--skm-fs-body); font-weight: 500; }\n.skm-emptyText { max-width: 420px; font-size: var(--skm-fs-caption); line-height: var(--skm-line-desc); }\n.skm-detailsSummary { cursor: pointer; color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-caption); }\n/* ── Activity log dialog (v1.3) ──────────────────────────────────────── */\n.skm-logList { display: flex; flex-direction: column; max-height: min(52vh, 420px); overflow: auto; }\n.skm-logRow { display: grid; grid-template-columns: auto auto minmax(0, 1fr); align-items: start; gap: 8px; padding: 7px 2px; border-bottom: var(--skm-hairline) solid var(--dsw-alias-border-l1); font-size: var(--skm-fs-tiny); line-height: 16px; }\n.skm-logRow:last-child { border-bottom: 0; }\n.skm-logTime { color: var(--dsw-alias-label-tertiary); font-variant-numeric: tabular-nums; white-space: nowrap; }\n.skm-logDot { width: 6px; height: 6px; margin-top: 5px; border-radius: 50%; background: var(--dsw-alias-label-tertiary); }\n.skm-logDot[data-level=\"warn\"] { background: var(--dsw-alias-state-warning-primary, #c98a00); }\n.skm-logDot[data-level=\"error\"] { background: var(--dsw-alias-state-error-primary); }\n.skm-logMsg { color: var(--dsw-alias-label-secondary); overflow-wrap: anywhere; }\n.skm-logMsg code { margin-right: 6px; font-family: var(--dsw-font-family-mono, ui-monospace, Menlo, monospace); font-size: var(--skm-fs-tiny); }\n.skm-logMeta { margin-right: auto; color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-tiny); }\n\n.skm-spin { animation: skm-spin 900ms linear infinite; }\n@keyframes skm-spin { to { transform: rotate(360deg); } }\n.skm-loading { display: flex; align-items: center; gap: 6px; padding: 24px 0; color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-caption); }\n\n/* ── Modal (portalled by React into the overlay root) ─────────────────── */\n.skm-overlay { position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center; padding: 24px; background: rgba(0,0,0,.38); }\n.skm-modal { width: min(640px, 100%); max-height: 82vh; display: flex; flex-direction: column; border-radius: 12px; background: var(--dsw-alias-bg-layer-0, #fff); border: var(--skm-hairline) solid var(--dsw-alias-border-l1); box-shadow: 0 18px 48px rgba(0,0,0,.28); overflow: hidden; }\n.skm-modal[data-width=\"wide\"] { width: min(780px, 100%); }\n.skm-modalHead { display: flex; align-items: flex-start; gap: var(--skm-gap); padding: 16px 18px 10px; }\n.skm-modalTitle { margin: 0; flex: 1 1 auto; font-size: var(--skm-fs-body); font-weight: 600; line-height: var(--skm-line-body); }\n.skm-modalDesc { margin: 4px 0 0; color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-caption); line-height: var(--skm-line-desc); }\n.skm-modalBody { padding: 4px 18px 10px; overflow: auto; display: flex; flex-direction: column; gap: 10px; }\n.skm-modalFooter { display: flex; align-items: center; justify-content: flex-end; gap: var(--skm-gap-sm); padding: 12px 18px 16px; border-top: var(--skm-hairline) solid var(--dsw-alias-border-l1); }\n.skm-modalFooter .skm-grow { flex: 1 1 auto; }\n\n.skm-field { display: flex; flex-direction: column; gap: 5px; }\n.skm-fieldLabel { color: var(--dsw-alias-label-secondary); font-size: var(--skm-fs-caption); font-weight: 500; }\n.skm-input { width: 100%; height: 32px; padding: 0 10px; border: var(--skm-hairline) solid var(--dsw-alias-border-l1); border-radius: 7px; background: var(--dsw-alias-bg-layer-1); color: var(--dsw-alias-label-primary); font: inherit; font-size: var(--skm-fs-desc); outline: 0; }\n.skm-input:focus { border-color: var(--dsw-alias-state-business-primary); }\n.skm-hint { margin: 0; color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-tiny); line-height: 16px; }\n.skm-fieldRow { display: flex; gap: var(--skm-gap-sm); }\n.skm-fieldRow .skm-field { flex: 1 1 0; min-width: 0; }\n\n.skm-scanHead { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; color: var(--dsw-alias-label-secondary); font-size: var(--skm-fs-caption); }\n.skm-scanList { display: flex; flex-direction: column; gap: 2px; max-height: 280px; overflow: auto; margin: 0 -4px; padding: 0 4px; }\n.skm-scanRow { display: flex; align-items: flex-start; gap: 8px; padding: 7px 4px; border-radius: 6px; }\n.skm-scanRow:hover { background: var(--dsw-alias-interactive-bg-hover); }\n.skm-scanRow input[type=\"checkbox\"] { margin: 3px 0 0; accent-color: var(--dsw-alias-state-business-primary); }\n.skm-scanMain { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 1px; }\n.skm-scanName { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: var(--skm-fs-caption); font-weight: 500; }\n.skm-scanPath { color: var(--dsw-alias-label-tertiary); font-size: var(--skm-fs-tiny); overflow-wrap: anywhere; }\n.skm-scanNameInput { width: 150px; height: 22px; padding: 0 6px; border: var(--skm-hairline) solid var(--dsw-alias-border-l1); border-radius: 5px; background: var(--dsw-alias-bg-layer-0, transparent); color: var(--dsw-alias-label-primary); font: inherit; font-size: var(--skm-fs-tiny); }\n.skm-scanRow[data-invalid=\"true\"] { opacity: .62; }\n.skm-scanRow[data-invalid=\"true\"] .skm-scanName { text-decoration: line-through; }\n@media (max-width: 640px) {\n  .skm-root { padding-top: 10px; }\n  .skm-headActions { width: 100%; justify-content: flex-end; }\n  .skm-search { max-width: none; }\n  .skm-detailGrid { grid-template-columns: minmax(0, 1fr); gap: 1px 0; }\n  .skm-detailGrid dt { margin-top: 5px; }\n  .skm-fieldRow { flex-direction: column; }\n  .skm-modal { max-height: 88vh; }\n}\n\n/* ── Repository groups (v1.1) ─────────────────────────────────────────── */\n.skm-repos { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }\n.skm-repo { border: var(--skm-hairline) solid var(--dsw-alias-border-l1); border-radius: 10px; background: var(--dsw-alias-bg-layer-1, transparent); overflow: hidden; }\n.skm-repoHead { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: var(--dsw-alias-bg-layer-2, transparent); }\n.skm-repo[data-open=\"true\"] .skm-repoHead { border-bottom: var(--skm-hairline) solid var(--dsw-alias-border-l1); }\n.skm-repoToggle { flex: none; transition: transform 120ms ease; }\n.skm-repoToggle[data-open=\"true\"] { transform: rotate(90deg); }\n.skm-repoIcon { display: inline-flex; color: var(--dsw-alias-label-caption); }\n.skm-repoTitle { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px; }\n.skm-repoNameRow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 0; }\n.skm-repoName { max-width: 48%; overflow: hidden; font-size: 13px; font-weight: 600; color: var(--dsw-alias-label-primary); text-overflow: ellipsis; white-space: nowrap; }\n.skm-repoLink { display: inline-flex; padding: 2px; border-radius: 4px; color: var(--dsw-alias-label-caption); }\n.skm-repoLink:hover { color: var(--dsw-alias-state-business-primary); background: var(--dsw-alias-interactive-bg-hover); }\n.skm-repoBadges { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }\n.skm-repoMeta { display: flex; align-items: center; gap: 10px; min-width: 0; font-size: 12px; color: var(--dsw-alias-label-caption); }\n.skm-repoUrl { max-width: 100%; overflow: hidden; opacity: .85; text-overflow: ellipsis; white-space: nowrap; }\n.skm-repoActions { display: flex; align-items: center; gap: 6px; flex: none; }\n.skm-repoBody { padding: 0 12px; }\n.skm-repoBody .skm-list { padding: 2px 0; }\n.skm-repoBody .skm-rowHead { padding: 11px 0; }\n.skm-chevronBtn { transition: transform 120ms ease; }\n.skm-chevronBtn[data-open=\"true\"] { transform: rotate(90deg); }\n.skm-switch[data-mixed=\"true\"] { background: var(--dsw-alias-state-warn-primary, var(--dsw-alias-state-business-primary)); }\n.skm-switch[data-mixed=\"true\"]::after { top: 8px; left: 2px; width: 10px; height: 2px; border-radius: 1px; transform: translateX(9px); }\n.skm-scanRow[data-disabled=\"true\"] { opacity: .55; }\n.skm-scanRow[data-disabled=\"true\"] .skm-scanName { text-decoration: none; }\n";
 
     function cx() {
       var out = [];
@@ -43,6 +45,28 @@ window.__ModuleLoader__.load({
       return String(template).replace(/\{([a-zA-Z0-9_]+)\}/g, function (match, key) {
         return params[key] === undefined || params[key] === null ? match : String(params[key]);
       });
+    }
+
+    // Per-browser UI state (expanded repository groups, dismissed update banner).
+    // localStorage may be unavailable (private mode, embedded webview): degrade
+    // to in-memory state instead of failing the panel.
+    function readUiStore() {
+      try {
+        if (typeof window === "undefined" || !window.localStorage) return {};
+        var raw = window.localStorage.getItem(UI_STORE_KEY);
+        if (!raw) return {};
+        var parsed = JSON.parse(raw);
+        return parsed && typeof parsed === "object" ? parsed : {};
+      } catch (error) {
+        return {};
+      }
+    }
+
+    function writeUiStore(next) {
+      try {
+        if (typeof window === "undefined" || !window.localStorage) return;
+        window.localStorage.setItem(UI_STORE_KEY, JSON.stringify(next));
+      } catch (error) {}
     }
 
     // ── Dictionaries: zh is the source of truth; en mirrors every key ──────
@@ -169,7 +193,25 @@ window.__ModuleLoader__.load({
         repoEmptyFiltered: "此仓库下没有匹配的技能",
         repoLocalHint: "本地目录",
         skillContent: "SKILL.md 内容",
-        contentTruncated: "内容过长，仅显示前 64 KiB"
+        contentTruncated: "内容过长，仅显示前 64 KiB",
+        collapseAll: "全部折叠",
+        expandAll: "全部展开",
+        updateBanner: "{count} 个仓库有新提交",
+        updateBannerOne: "1 个仓库有新提交",
+        updateAll: "全部更新",
+        updatingAll: "正在更新 {done}/{total}…",
+        updateAllDone: "已更新 {count} 个仓库",
+        updateAllFailed: "{count} 个仓库更新失败",
+        viewUpdates: "查看",
+        dismissUpdate: "关闭提示",
+        updateConfirmTitle: "全部更新",
+        updateConfirmText: "将依次更新 {count} 个仓库到最新提交，期间技能可能短暂重新加载。继续？",
+        logsDesc: "本机操作记录，最多保留 300 条。",
+        logsCount: "共 {count} 条",
+        logsCopy: "复制",
+        logsFailed: "复制失败，请手动选择文本",
+        levelWarn: "警告",
+        levelError: "错误"
       },
       en: {
         nav: "Skills",
@@ -293,7 +335,25 @@ window.__ModuleLoader__.load({
         repoEmptyFiltered: "No skills match in this repository",
         repoLocalHint: "Local folder",
         skillContent: "SKILL.md content",
-        contentTruncated: "Content is too long; showing the first 64 KiB"
+        contentTruncated: "Content is too long; showing the first 64 KiB",
+        collapseAll: "Collapse all",
+        expandAll: "Expand all",
+        updateBanner: "{count} repositories have new commits",
+        updateBannerOne: "1 repository has new commits",
+        updateAll: "Update all",
+        updatingAll: "Updating {done}/{total}…",
+        updateAllDone: "Updated {count} repositories",
+        updateAllFailed: "{count} repositories failed to update",
+        viewUpdates: "View",
+        dismissUpdate: "Dismiss",
+        updateConfirmTitle: "Update all",
+        updateConfirmText: "Update {count} repositories to their latest commits? Skills may reload briefly.",
+        logsDesc: "Local activity log, up to 300 entries.",
+        logsCount: "{count} entries",
+        logsCopy: "Copy",
+        logsFailed: "Copy failed — select the text manually",
+        levelWarn: "Warning",
+        levelError: "Error"
       }
     };
 
@@ -784,9 +844,80 @@ window.__ModuleLoader__.load({
         footer: [
           h("div", { key: "grow", className: "skm-grow" }),
           h(Button, { key: "cancel", variant: "ghost", onClick: props.onClose, disabled: busy }, t("cancel")),
-          h(Button, { key: "ok", variant: "danger", onClick: run, disabled: busy }, props.confirmLabel || t("confirmRemove"))
+          h(Button, { key: "ok", variant: props.danger === false ? "primary" : "danger", onClick: run, disabled: busy }, props.confirmLabel || t("confirmRemove"))
         ]
       }, h("p", { className: "skm-hint", style: { fontSize: "13px", lineHeight: "20px" } }, props.message));
+    }
+
+    // ── Activity log dialog ──────────────────────────────────────────────
+    function ActivityDialog(props) {
+      var t = props.t;
+      var _data = useState({ loading: true, error: "", list: [] });
+      var data = _data[0], setData = _data[1];
+      var _copied = useState(false);
+      var copied = _copied[0], setCopied = _copied[1];
+
+      function load() {
+        setData(function (previous) { return { loading: true, error: "", list: previous.list }; });
+        apiGet("/logs?limit=200").then(function (result) {
+          setData({ loading: false, error: "", list: result.events || [] });
+        }).catch(function (failure) {
+          setData({ loading: false, error: errorMessage(failure), list: [] });
+        });
+      }
+
+      useEffect(function () { load(); }, []);
+
+      function copyAll() {
+        var lines = data.list.slice().reverse().map(function (event) {
+          var level = String(event.level || "info").toUpperCase();
+          var skill = event.skill ? event.skill + " \u00b7 " : "";
+          return shortTime(event.at) + " [" + level + "] " + skill + event.message;
+        });
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(lines.join("\n"));
+            setCopied(true);
+            setTimeout(function () { setCopied(false); }, 1500);
+          }
+        } catch (error) {}
+      }
+
+      var rows = data.list.slice().reverse().map(function (event, index) {
+        var level = event.level === "warn" || event.level === "error" ? event.level : "info";
+        return h("div", { key: index, className: "skm-logRow" },
+          h("time", { className: "skm-logTime" }, shortTime(event.at)),
+          h("span", { className: "skm-logDot", "data-level": level, "aria-hidden": "true" }),
+          h("span", { className: "skm-logMsg" },
+            event.skill ? h("code", {}, event.skill) : null,
+            event.message));
+      });
+
+      var body;
+      if (data.loading && data.list.length === 0) {
+        body = h("div", { className: "skm-loading" }, h(Spinner, {}), t("loadingContent"));
+      } else if (data.error) {
+        body = h("div", { className: "skm-banner", "data-tone": "error", role: "alert" },
+          h(Icon, { name: "alert" }), h("div", {}, data.error));
+      } else if (data.list.length === 0) {
+        body = h("p", { className: "skm-hint" }, t("eventsEmpty"));
+      } else {
+        body = h("div", { className: "skm-logList" }, rows);
+      }
+
+      return h(Modal, {
+        open: true,
+        onClose: props.onClose,
+        title: t("events"),
+        description: t("logsDesc"),
+        closeLabel: t("close"),
+        footer: [
+          h("span", { key: "meta", className: "skm-logMeta" }, t("logsCount", { count: data.list.length })),
+          h(Button, { key: "refresh", variant: "ghost", icon: "refresh", onClick: load, disabled: data.loading }, t("refresh")),
+          h(Button, { key: "copy", variant: "outline", icon: "copy", onClick: copyAll, disabled: data.loading || data.list.length === 0 }, copied ? t("copied") : t("logsCopy")),
+          h(Button, { key: "close", variant: "ghost", onClick: props.onClose }, t("close"))
+        ]
+      }, body);
     }
 
     // ── Repository import dialog ─────────────────────────────────────────
@@ -933,10 +1064,32 @@ window.__ModuleLoader__.load({
       var eventsOpen = _eventsOpen[0], setEventsOpen = _eventsOpen[1];
       var _copied = useState("");
       var copied = _copied[0], setCopied = _copied[1];
-      var _collapsedRepos = useState({});
-      var collapsedRepos = _collapsedRepos[0], setCollapsedRepos = _collapsedRepos[1];
+      var _ui = useState(readUiStore);
+      var ui = _ui[0], setUi = _ui[1];
+      var _updateAll = useState(null);
+      var updateAll = _updateAll[0], setUpdateAll = _updateAll[1];
       var _repoDialog = useState(null);
       var repoDialog = _repoDialog[0], setRepoDialog = _repoDialog[1];
+      var inflightCheck = useRef(false);
+      var autoCheckAt = useRef(0);
+
+      function setUiStore(patch) {
+        setUi(function (previous) {
+          var next = Object.assign({}, previous, patch);
+          writeUiStore(next);
+          return next;
+        });
+      }
+
+      function setRepoOpen(repoId, open) {
+        setUi(function (previous) {
+          var map = Object.assign({}, previous.open || {});
+          if (open) map[repoId] = true; else delete map[repoId];
+          var next = Object.assign({}, previous, { open: map });
+          writeUiStore(next);
+          return next;
+        });
+      }
 
       var load = useCallback(function (silent) {
         return apiGet("/state").then(function (next) {
@@ -969,6 +1122,30 @@ window.__ModuleLoader__.load({
         var timer = setTimeout(function () { setAlert(null) }, 7000);
         return function () { clearTimeout(timer) };
       }, [alert]);
+
+      // Periodic upstream probe: once shortly after the panel opens (when the
+      // last stored check is stale) and then every 30 minutes while visible.
+      useEffect(function () {
+        if (!data) return undefined;
+        var gitRepos = (data.repos || []).filter(function (repo) { return repo.kind !== "local"; });
+        if (gitRepos.length === 0) return undefined;
+        var newest = 0;
+        for (var i = 0; i < gitRepos.length; i += 1) newest = Math.max(newest, Number(gitRepos[i].checkedAt) || 0);
+        var run = function () {
+          if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
+          var last = Math.max(newest, autoCheckAt.current || 0);
+          if (Date.now() - last < AUTO_CHECK_MS) return;
+          checkUpdates({ auto: true });
+        };
+        run();
+        var timer = setInterval(run, 60 * 1000);
+        var onVisible = function () { run(); };
+        if (typeof document !== "undefined") document.addEventListener("visibilitychange", onVisible);
+        return function () {
+          clearInterval(timer);
+          if (typeof document !== "undefined") document.removeEventListener("visibilitychange", onVisible);
+        };
+      }, [data !== null]);
 
       function setBusyFor(name, action) {
         setBusy(function (previous) {
@@ -1016,14 +1193,35 @@ window.__ModuleLoader__.load({
         }).then(function () { setBusyFor("__bulk__", null) });
       }
 
-      function checkUpdates() {
+      function checkUpdates(options) {
+        var auto = !!(options && options.auto);
+        if (inflightCheck.current) return;
+        inflightCheck.current = true;
         setBusyFor("__check__", "check");
         apiPost("/repos/check-updates", {}).then(function (result) {
-          setAlert({ tone: "ok", text: t("alertChecked", { count: (result.repos || []).length }) });
+          // Automatic probes stay silent: the update banner is the only prompt.
+          if (!auto) setAlert({ tone: "ok", text: t("alertChecked", { count: (result.repos || []).length }) });
+          return load(true);
+        }).catch(function (failure) {
+          if (!auto) setAlert({ tone: "error", text: t("actionFailed", { message: errorMessage(failure) }) });
+        }).then(function () {
+          autoCheckAt.current = Date.now();
+          inflightCheck.current = false;
+          setBusyFor("__check__", null);
+        });
+      }
+
+      function updateRepo(repo) {
+        var key = "__repo__" + repo.id;
+        if (busy[key]) return;
+        var label = repoLabel(repo.url, repo.kind);
+        setBusyFor(key, "update");
+        apiPost("/repos/update", { repoId: repo.id }).then(function () {
+          setAlert({ tone: "ok", text: t("alertUpdated", { name: label }) });
           return load(true);
         }).catch(function (failure) {
           setAlert({ tone: "error", text: t("actionFailed", { message: errorMessage(failure) }) });
-        }).then(function () { setBusyFor("__check__", null) });
+        }).then(function () { setBusyFor(key, null) });
       }
 
       function refreshFiles() {
@@ -1065,11 +1263,16 @@ window.__ModuleLoader__.load({
       }
 
       function toggleRepoOpen(repoId) {
-        setCollapsedRepos(function (previous) {
-          var next = Object.assign({}, previous);
-          if (next[repoId]) delete next[repoId]; else next[repoId] = true;
-          return next;
-        });
+        var open = !!ui.open && ui.open[repoId] === true;
+        setRepoOpen(repoId, !open);
+      }
+
+      function toggleAllRepos(open) {
+        var map = {};
+        if (open) {
+          for (var i = 0; i < repos.length; i += 1) map[repos[i].id] = true;
+        }
+        setUiStore({ open: map });
       }
 
       function toggleRepo(repo) {
@@ -1171,6 +1374,78 @@ window.__ModuleLoader__.load({
         return list;
       }, [filtered, repos]);
 
+      var searching = query.trim().length > 0;
+      var openMap = ui.open || {};
+      var openCount = 0;
+      for (var openIndex = 0; openIndex < repos.length; openIndex += 1) {
+        if (openMap[repos[openIndex].id] === true) openCount += 1;
+      }
+      var allOpen = repos.length > 0 && openCount === repos.length;
+      var updatedRepos = repos.filter(function (repo) { return repo.updateAvailable; });
+      var updateSignature = updatedRepos.map(function (repo) { return repo.id + ":" + repo.latestCommit; }).sort().join("|");
+      var showUpdateBanner = updatedRepos.length > 0 && updateSignature !== (ui.updateDismissed || "");
+      var lastCheckedAt = 0;
+      for (var checkIndex = 0; checkIndex < repos.length; checkIndex += 1) {
+        lastCheckedAt = Math.max(lastCheckedAt, Number(repos[checkIndex].checkedAt) || 0);
+      }
+
+      function askUpdateAll() {
+        if (updatedRepos.length === 0) return;
+        setConfirm({
+          title: t("updateConfirmTitle"),
+          message: t("updateConfirmText", { count: updatedRepos.length }),
+          confirmLabel: t("updateAll"),
+          danger: false,
+          onConfirm: function () {
+            // Close the confirmation immediately so the banner can show progress.
+            setConfirm(null);
+            runUpdateAll();
+            return Promise.resolve();
+          }
+        });
+      }
+
+      function runUpdateAll() {
+        var targets = updatedRepos.slice();
+        if (targets.length === 0) return Promise.resolve();
+        var failed = [];
+        setUpdateAll({ done: 0, total: targets.length, failed: [] });
+        var chain = Promise.resolve();
+        targets.forEach(function (repo, index) {
+          chain = chain.then(function () {
+            return apiPost("/repos/update", { repoId: repo.id }).catch(function (failure) {
+              failed.push({ id: repo.id, url: repo.url, error: errorMessage(failure) });
+            }).then(function () {
+              setUpdateAll({ done: index + 1, total: targets.length, failed: failed.slice() });
+            });
+          });
+        });
+        return chain.then(function () {
+          setUpdateAll(null);
+          setUiStore({ updateDismissed: "" });
+          setAlert(failed.length
+            ? { tone: "warn", text: t("updateAllFailed", { count: failed.length }) }
+            : { tone: "ok", text: t("updateAllDone", { count: targets.length }) });
+          return load(true);
+        });
+      }
+
+      function dismissUpdate() {
+        setUiStore({ updateDismissed: updateSignature });
+      }
+
+      function focusUpdates() {
+        var map = Object.assign({}, ui.open || {});
+        for (var i = 0; i < updatedRepos.length; i += 1) map[updatedRepos[i].id] = true;
+        setUiStore({ open: map, updateDismissed: "" });
+        var first = updatedRepos[0];
+        if (!first) return;
+        setTimeout(function () {
+          var element = typeof document !== "undefined" ? document.querySelector('[data-skm-repo="' + first.id + '"]') : null;
+          if (element && typeof element.scrollIntoView === "function") element.scrollIntoView({ block: "nearest", behavior: "smooth" });
+        }, 80);
+      }
+
       function renderDetail(skill) {
         var entry = content[skill.name];
         var actions = [
@@ -1264,7 +1539,7 @@ window.__ModuleLoader__.load({
 
       function renderRepoGroup(group) {
         var repo = group.repo || {};
-        var collapsed = !!collapsedRepos[repo.id];
+        var collapsed = searching ? false : !(ui.open && ui.open[repo.id] === true);
         var total = typeof repo.skills === "number" ? repo.skills : group.skills.length;
         var enabledCount = typeof repo.enabled === "number" ? repo.enabled : group.skills.filter(function (item) { return item.enabled }).length;
         var available = repo.available || null;
@@ -1281,7 +1556,7 @@ window.__ModuleLoader__.load({
         var countText = available
           ? t("repoAvailable", { available: available, imported: total })
           : t("repoStats", { enabled: enabledCount, imported: total });
-        return h("section", { key: repo.id, className: "skm-repo", "data-open": collapsed ? "false" : "true" },
+        return h("section", { key: repo.id, className: "skm-repo", "data-open": collapsed ? "false" : "true", "data-skm-repo": repo.id },
           h("header", { className: "skm-repoHead" },
             h("button", {
               type: "button",
@@ -1310,6 +1585,12 @@ window.__ModuleLoader__.load({
                 h("span", {}, countText),
                 h("span", { className: "skm-repoUrl", title: repo.url }, repo.url))),
             h("div", { className: "skm-repoActions" },
+              repo.updateAvailable && repo.kind !== "local" ? h(Button, {
+                variant: "outline",
+                icon: "download",
+                disabled: !!busy[repoKey],
+                onClick: function () { updateRepo(repo) }
+              }, busy[repoKey] === "update" ? t("updating") : t("update")) : null,
               h(Switch, {
                 checked: allOn,
                 mixed: mixed,
@@ -1367,8 +1648,20 @@ window.__ModuleLoader__.load({
         h("div", { className: "skm-toolbarEnd" },
           h(Button, { variant: "ghost", onClick: function () { bulk("all") }, disabled: !!busy.__bulk__ }, t("bulkEnable")),
           h(Button, { variant: "ghost", onClick: function () { bulk("none") }, disabled: !!busy.__bulk__ }, t("bulkDisable")),
-          h(Button, { variant: "ghost", icon: "download", onClick: checkUpdates, disabled: !!busy.__check__ }, busy.__check__ ? t("checking") : t("checkUpdates")),
-          h(Button, { variant: "ghost", icon: "clock", onClick: function () { setEventsOpen(!eventsOpen) } }, eventsOpen ? t("hideEvents") : t("showEvents"))));
+          h(Button, {
+            variant: "ghost",
+            icon: "chevron",
+            onClick: function () { toggleAllRepos(!allOpen) },
+            disabled: repos.length === 0
+          }, allOpen ? t("collapseAll") : t("expandAll")),
+          h(Button, {
+            variant: "ghost",
+            icon: "download",
+            title: lastCheckedAt ? t("checkedAt", { time: shortTime(lastCheckedAt) }) : undefined,
+            onClick: checkUpdates,
+            disabled: !!busy.__check__
+          }, busy.__check__ ? t("checking") : t("checkUpdates")),
+          h(Button, { variant: "ghost", icon: "clock", onClick: function () { setEventsOpen(true) } }, t("events"))));
 
       var toolbar = h("div", { className: "skm-toolbar" },
         h("label", { className: "skm-search" },
@@ -1411,6 +1704,19 @@ window.__ModuleLoader__.load({
         ? h("div", { className: "skm-banner", "data-tone": "warn" }, h(Icon, { name: "alert" }), h("div", {}, t("providerMissing")))
         : null;
 
+      var updateBanner = !showUpdateBanner ? null : h("div", { className: "skm-banner", "data-tone": "update", role: "status" },
+        h(Icon, { name: "download" }),
+        h("div", { className: "skm-bannerText" },
+          h("strong", {}, t(updatedRepos.length === 1 ? "updateBannerOne" : "updateBanner", { count: updatedRepos.length })),
+          updateAll ? h("span", { className: "skm-bannerSub" },
+            t("updatingAll", { done: updateAll.done, total: updateAll.total }),
+            updateAll.failed.length ? " · " + t("updateAllFailed", { count: updateAll.failed.length }) : null) : null),
+        h("div", { className: "skm-bannerActions" },
+          h(Button, { variant: "primary", icon: "download", onClick: askUpdateAll, disabled: !!updateAll },
+            updateAll ? t("updatingAll", { done: updateAll.done, total: updateAll.total }) : t("updateAll")),
+          h(Button, { variant: "ghost", onClick: focusUpdates, disabled: !!updateAll }, t("viewUpdates")),
+          h(IconButton, { icon: "x", label: t("dismissUpdate"), onClick: dismissUpdate })));
+
       var list;
       if (skills.length === 0) {
         list = h("div", { className: "skm-empty" },
@@ -1426,28 +1732,22 @@ window.__ModuleLoader__.load({
         list = h("div", { className: "skm-repos" }, groups.map(renderRepoGroup));
       }
 
-      var events = data.events || [];
-      var eventsBlock = eventsOpen ? h("div", { className: "skm-events" },
-        events.length === 0 ? h("div", {}, t("eventsEmpty")) : events.slice().reverse().map(function (event, index) {
-          return h("div", { key: index },
-            h("time", {}, shortTime(event.at)),
-            h("span", { style: { flex: "1 1 auto" } }, event.message));
-        })) : null;
-
       return h("section", { className: "skm-root" },
         header,
         summaryLine,
+        updateBanner,
         providerNotice,
         notice,
         toolbar,
         list,
-        eventsBlock,
         h("p", { className: "skm-hint" }, t("pathHint", { path: data.paths ? data.paths.manager : "" })),
+        eventsOpen ? h(ActivityDialog, { t: t, onClose: function () { setEventsOpen(false) } }) : null,
         importOpen ? h(ImportDialog, {
           t: t,
           onClose: function () { setImportOpen(false) },
           onDone: function (result) {
             setImportOpen(false);
+            if (result.repo) setRepoOpen(result.repo, true);
             setAlert({
               tone: result.skipped && result.skipped.length > 0 ? "warn" : "ok",
               text: t("alertInstalled", { installed: result.installed.length, skipped: (result.skipped || []).length })
@@ -1457,9 +1757,10 @@ window.__ModuleLoader__.load({
         }) : null,
         confirm ? h(ConfirmDialog, {
           t: t,
-          title: t("confirmRemoveTitle"),
+          title: confirm.title || t("confirmRemoveTitle"),
           message: confirm.message,
-          confirmLabel: t("confirmRemove"),
+          confirmLabel: confirm.confirmLabel || t("confirmRemove"),
+          danger: confirm.danger,
           onClose: function () { setConfirm(null) },
           onConfirm: confirm.onConfirm
         }) : null,
