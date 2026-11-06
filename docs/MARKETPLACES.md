@@ -46,7 +46,7 @@ Title: DSH Skills Tools — a Cursor-style skills manager for DeepSeek Harness
 
 Body: Import Agent Skills from any Git repository, toggle each skill on or off, check upstream commits and switch snapshots. Disabled skills stay out of the model context. Repositories are kept as read-only snapshots, so your source tree is never modified. Works with GitHub, GitLab, intranet hosts and local folders using your existing git credentials.
 
-## 提交状态（2026-11-04）
+## 提交状态（2026-11-06 更新）
 
 | 市场 | 方式 | 状态 | 链接 |
 | --- | --- | --- | --- |
@@ -54,14 +54,14 @@ Body: Import Agent Skills from any Git repository, toggle each skill on or off, 
 | jiji262/awesome-deepseek-harness | README 单行新增（Agent Skills） | 🟡 待审 | https://github.com/jiji262/awesome-deepseek-harness/pull/52 |
 | dshmarketplace.dev | /submit 表单（服务器端 GitHub 校验） | 🟡 暂不可提交：服务端 GitHub 限流（2026-11-04 实测） | https://dshmarketplace.dev/submit |
 | dshplugin.app | /submit 表单 + Cloudflare Turnstile | ⛔ 需人工在浏览器完成验证码 | https://dshplugin.app/submit |
-| dshmarket.com（10.5k★，DSH 内置市场） | 目录来自 awesome-dsh-plugin registry，PR #11849 合入后自动上架 | 🟡 依赖 awesome-dsh-plugin PR | https://dshmarket.com |
-| dsh.so 公开 tracker | Issue 登记（表单 API 落到旧仓库时兜底） | 🟡 待审 | https://github.com/dsh-so/dsh-plugin-submissions/issues/23 |
-| dsh.so（25k 插件注册表） | /submit 表单：抽查通过后提交，后端 issue 审核 | 🟡 已提交（内部 issue #415，2026-11-04） | https://www.dsh.so/submit |
-| deepseekplugin.org（自助 API 投稿） | POST /api/submissions，即时发布 | ✅ 已发布（2026-11-04，state=published） | https://deepseekplugin.org/plugins |
+| dshmarket.com（10.5k★，DSH 内置市场） | 目录来自 awesome-dsh-plugin registry，PR #11849 已合入 | 🟡 registry 已合入，等站点同步 | https://dshmarket.com |
+| dsh.so 公开 tracker | Issue 登记（表单 API 落到旧仓库时兜底） | ✅ 已上线（artifact 200） | https://www.dsh.so/artifact/dsh-skills-tools/ |
+| dsh.so（25k 插件注册表） | /submit 表单：检查通过后提交 | ✅ 已收录：https://www.dsh.so/artifact/dsh-skills-tools/ | https://www.dsh.so/submit |
+| deepseekplugin.org（自助 API 投稿） | POST /api/submissions，即时发布 | ✅ API 已 published；目录详情页待其同步 | https://deepseekplugin.org/plugins |
 | Alex-Yanggg/awesome-DSH-plugin（103★） | README + catalog/plugins.json + 生成的中文镜像 | 🟡 待审 | https://github.com/Alex-Yanggg/awesome-DSH-plugin/pull/176 |
-| hashgraph-online/awesome-ai-plugins（837★） | README 单行新增 | 🟡 待审 | https://github.com/hashgraph-online/awesome-ai-plugins/pull/1147 |
-| zhu1090093659/dsh-community-plugins（1k★） | community.json 追加一条 | 🟡 待审 | https://github.com/zhu1090093659/dsh-community-plugins/pull/77 |
-| leenkcool/Blue-Whale-Harness（196★） | Issue 收录模板 | 🟡 待审 | https://github.com/leenkcool/Blue-Whale-Harness/issues/188 |
+| hashgraph-online/awesome-ai-plugins（837★） | README 单行新增 | ✅ 已合并（2026-11-04T05:52Z），上架 HOL Registry | https://github.com/hashgraph-online/awesome-ai-plugins/pull/1147 |
+| zhu1090093659/dsh-community-plugins（1k★） | community.json 追加一条 | 🟡 维护者认可条目，已同步 upstream 等必检 | https://github.com/zhu1090093659/dsh-community-plugins/pull/77 |
+| leenkcool/Blue-Whale-Harness（196★） | Issue 收录模板 | ✅ 已收录（站点已重生成） | https://leenkcool.github.io/plugins.zh.html |
 | Zhiyuan-Fan/Awesome-DeepSeek-Harness-Plugins（563★） | Issue 请求收录 | 🟡 待审 | https://github.com/Zhiyuan-Fan/Awesome-DeepSeek-Harness-Plugins/issues/108 |
 | beancookie/awesome-dsh-plugin（188★） | README + README.en 单行新增（技能包） | 🟡 待审 | https://github.com/beancookie/awesome-dsh-plugin/pull/265 |
 | kejixiaoliang/awesome-dsh-plugins（73★） | plugins/skills.md 追加一条 | 🟡 待审 | https://github.com/kejixiaoliang/awesome-dsh-plugins/pull/188 |
@@ -69,12 +69,14 @@ Body: Import Agent Skills from any Git repository, toggle each skill on or off, 
 | 0xsline/awesome-deepseek-harness（1.2k★） | README + README.zh-CN 单行新增（Tools & Utilities） | 🟡 待审 | https://github.com/0xsline/awesome-deepseek-harness/pull/789 |
 | AdamPlatin123/dsh-plugin-radar（1.5k★） | PLUGINS.md 表格追加一行 | 🟡 待审 | https://github.com/AdamPlatin123/dsh-plugin-radar/pull/1020 |
 | libukai/awesome-deepseek-harness | README 单行新增（上下文、会话与输入） | 🟡 待审 | https://github.com/libukai/awesome-deepseek-harness/pull/160 |
-| imsai-sh/awesome-deepseek-harness-plugins（deepseek1024） | catalog JSON 单文件（category: skill） | 🟡 待审 | https://github.com/imsai-sh/awesome-deepseek-harness-plugins/pull/809 |
-| awesome-dsh-plugin/awesome-dsh-plugin | `data/plugins/hxlog__dsh-skills-tools.yml` | 🟡 待审（仓库创建未满 24h，CI 可能要求重新提交） | https://github.com/awesome-dsh-plugin/awesome-dsh-plugin/pull/11849 |
-| dsh-plugin.org（dshplugin/dsh-plugin-hub） | Issue 模板提交 | 🟡 待审 | https://github.com/dshplugin/dsh-plugin-hub/issues/616 |
+| imsai-sh/awesome-deepseek-harness-plugins（deepseek1024） | catalog JSON 单文件（category: skill） | ✅ 已合并上线 | https://deepseek1024.com |
+| awesome-dsh-plugin/awesome-dsh-plugin（20k★） | `data/plugins/hxlog__dsh-skills-tools.yml` | ✅ 已合并（2026-11-05T17:06Z），站点可访问 | https://awesome-dsh-plugin.com/p/hxlog/dsh-skills-tools/ |
+| dsh-plugin.org（dshplugin/dsh-plugin-hub，310★） | Issue 模板提交 | ✅ 已收录：https://dsh-plugin.org/plugins/hxlog/dsh-skills-tools | https://github.com/dshplugin/dsh-plugin-hub/issues/616 |
 | deepseek-harness Discussions（Show Your Plugins!） | 新建 Discussion | ✅ 已发布 | https://github.com/deepseek-ai/deepseek-harness/discussions/12094 |
 | dshplugins.com | 网页表单 | ⚪ 需 Google 登录后提交 | https://dshplugins.com/submit |
 | dshmarketplace.com | 邮件 hello@dshmarketplace.com | ⚪ 待发邮件 | https://dshmarketplace.com |
 | dshplugin.app | 网页表单（含 captcha） | ⚪ 需人工过验证码 | https://dshplugin.app/submit |
+
+补充（2026-11-06 实测已上线）：dshplugins.org（https://dshplugins.org/p/hxlog~dsh-skills-tools）、dshfind.com、dshhub.co。
 
 自动收录：已发布 npm（`dsh-skills-tools`）并设置 `dsh-plugin`、`deepseek-harness` 等 GitHub topics，dsh.market、dsh.so、dsh-plugins.org、dsh-plugin-catalog、bradeGithub、LivXue、unStone、linny006、dshmk 等按 topic / npm 关键字自动抓取的目录会随下一次抓取生效。
