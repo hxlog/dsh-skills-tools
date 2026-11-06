@@ -82,6 +82,8 @@ Body: Import Agent Skills from any Git repository, toggle each skill on or off, 
 | dshmarketplace.com | 邮件 hello@dshmarketplace.com | ⚪ 待发邮件 | https://dshmarketplace.com |
 | dshplugin.app | 网页表单（含 captcha） | ⚪ 需人工过验证码 | https://dshplugin.app/submit |
 
-补充（2026-11-06 实测已上线）：dshplugins.org（https://dshplugins.org/p/hxlog~dsh-skills-tools）、dshfind.com、dshhub.co、bradeGithub/DSH-Plugins-Marketplace（registry.json 含两款插件）。
+补充（2026-11-06 实测已上线）：dshplugins.org（https://dshplugins.org/p/hxlog~dsh-skills-tools）、dshfind.com、dshhub.co、bradeGithub/DSH-Plugins-Marketplace（registry.json 含两款插件）、dsh.market（1.2BingLing，195★，plugins.json 含两款插件）。
+
+注：dshmarket.com / awesome-dsh-plugin.com / npm `dsh-plugin-catalog` 共用的 `index.json` 里目前只有 `dsh-mcp-tools`，`dsh-skills-tools` 的 registry 条目已合入（2026-11-05T17:06Z），索引构建滞后，等下一轮 build。
 
 自动收录：已发布 npm（`dsh-skills-tools`）并设置 `dsh-plugin`、`deepseek-harness` 等 GitHub topics，dsh.market、dsh.so、dsh-plugins.org、dsh-plugin-catalog、bradeGithub、LivXue、unStone、linny006、dshmk 等按 topic / npm 关键字自动抓取的目录会随下一次抓取生效。
