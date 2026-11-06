@@ -62,6 +62,8 @@ Body: Import Agent Skills from any Git repository, toggle each skill on or off, 
 | hashgraph-online/awesome-ai-plugins（837★） | README 单行新增 | ✅ 已合并（2026-11-04T05:52Z），上架 HOL Registry | https://github.com/hashgraph-online/awesome-ai-plugins/pull/1147 |
 | zhu1090093659/dsh-community-plugins（1k★） | community.json 追加一条 | 🟡 维护者认可条目，已同步 upstream 等必检 | https://github.com/zhu1090093659/dsh-community-plugins/pull/77 |
 | leenkcool/Blue-Whale-Harness（196★） | Issue 收录模板 | ✅ 已收录（站点已重生成） | https://leenkcool.github.io/plugins.zh.html |
+| coderPerseus/dsh-hub（dshhub.org，2k+ 插件） | GitHub Issue 模板 `submit-plugin.yml` | 🟡 待审 | https://github.com/coderPerseus/dsh-hub/issues/83 |
+| dsh.pub（12.7k 注册表） | /en/submit/ 自动建 PR，但需 Cloudflare Turnstile | ⚪ 需人工完成 security check | https://dsh.pub/en/submit/ |
 | walkinglabs/awesome-deepseek-harness-plugins（52★） | README + README.zh 单行新增（Tools, Integrations & Automation） | 🟡 待审 | https://github.com/walkinglabs/awesome-deepseek-harness-plugins/pull/149 |
 | cordis.run（349 插件市场，web-casa 列表上游） | /submit 表单，需注册登录；可提供反链走快速通道 | ⚪ 需你登录提交 | https://cordis.run/submit |
 | web-casa/Awesome-DeepSeek-Harness-Plugins（113★） | 由 cordis.run 索引自动生成，不直接收 PR | 🟡 随 cordis.run 收录 | https://github.com/web-casa/Awesome-DeepSeek-Harness-Plugins |
