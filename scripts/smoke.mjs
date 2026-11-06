@@ -82,6 +82,26 @@ assert.ok(clientText.includes('id: "skills"'))
 assert.ok(clientText.includes('order: 19'))
 assert.ok(clientText.includes('"/skills-tools/api"'))
 
+// ── Sparse checkout static contract ──────────────────────────────────────
+const gitSource = fs.readFileSync(path.join(process.cwd(), 'lib', 'git.js'), 'utf8')
+assert.ok(gitSource.includes('--sparse'), 'git.js must clone with --sparse')
+assert.ok(gitSource.includes('--filter=blob:none'), 'git.js must use a blobless partial clone')
+assert.ok(gitSource.includes("'sparse-checkout'"), 'git.js must call git sparse-checkout')
+assert.ok(gitSource.includes("'set', '--cone'"), 'git.js must use cone mode sparse-checkout')
+assert.ok(gitSource.includes('sparseClone') && gitSource.includes('fullClone'), 'sparse clone must fall back to the full clone')
+assert.ok(gitSource.includes('rmSync(destDir'), 'fallback must delete the half-finished sparse checkout')
+assert.match(gitSource, /if \(sparse\) return sparse[\s\S]*?return await fullClone\(source, destDir, commitRef\)/, 'fallback branch must run the full clone')
+
+const { resolveSource } = await import('../lib/git.js')
+const treeSource = resolveSource({ url: 'https://github.com/vercel/next.js/tree/canary/skills' })
+assert.equal(treeSource.url, 'https://github.com/vercel/next.js')
+assert.equal(treeSource.ref, 'canary')
+assert.equal(treeSource.subdir, 'skills')
+const gitlabSource = resolveSource({ url: 'https://gitlab.example.com/group/project/-/tree/main/plugins/x/skills' })
+assert.equal(gitlabSource.url, 'https://gitlab.example.com/group/project')
+assert.equal(gitlabSource.ref, 'main')
+assert.equal(gitlabSource.subdir, 'plugins/x/skills')
+
 // ── Locale files ─────────────────────────────────────────────────────────
 for (const lang of ['zh', 'en']) {
   const dict = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'locale', lang + '.json'), 'utf8'))
@@ -92,4 +112,4 @@ manager.dispose()
 assert.equal(disposals, 1)
 await fsp.rm(home, { recursive: true, force: true })
 if (process.exitCode) process.exit(process.exitCode)
-console.log('smoke OK: frontmatter + manager + provider + client bundle + locale')
+console.log('smoke OK: frontmatter + manager + provider + client bundle + locale + sparse checkout contract')

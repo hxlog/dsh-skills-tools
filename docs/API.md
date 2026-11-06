@@ -47,7 +47,7 @@
           "lastError": null
         }
       }],
-      "repos": [{ "id": "repo_…", "url": "…", "ref": "pro", "commit": "…", "skills": 68, "enabled": 68, "updateAvailable": false }],
+      "repos": [{ "id": "repo_…", "url": "…", "ref": "pro", "subdir": "", "commit": "…", "skills": 68, "enabled": 68, "updateAvailable": false }],
       "summary": { "total": 68, "enabled": 68, "loaded": 68, "repos": 1 },
       "provider": { "name": "dsh-skills-tools", "registered": true, "rank": 350 },
       "paths": { "manager": "…", "repos": "…", "state": "…" },
@@ -102,6 +102,8 @@
 
 `/state` 的 `repos[]` 新增 `available` 字段（已知时可导入技能总数，未知时为 null）。
 
+`/state` 与 `/repos/inspect` 的 `repos[]` 还包含 `subdir` 字段（v1.2 起）：来源子目录，空字符串表示整个仓库。
+
 ## 导入
 
 ### POST /import/scan
@@ -109,6 +111,17 @@
     { "url": "https://code.comein.cn/ai/luban.git", "ref": "pro", "subdir": "" }
 
 url 可以是 Git URL、本机绝对路径或 file:// URL。ref 为空时使用远端默认分支（HEAD）。扫描会克隆到 $DSH_HOME/dsh-skills-tools/tmp/scan-*，15 分钟内有效。
+
+**subdir 语义（v1.2）**：`subdir` 可以显式传入，也可以由 URL 的 `/tree/<ref>/<subdir>` 路径自动解析（GitHub/Gitea 形式与 GitLab 的 `/-/tree/...` 形式都支持）：
+
+    { "url": "https://github.com/vercel/next.js/tree/canary/skills" }
+    // 等价于 { "url": "https://github.com/vercel/next.js", "ref": "canary", "subdir": "skills" }
+
+扫描结果只保留该子目录下的技能，`relPath` 仍保留完整路径（例如 `skills/next-dev-loop`），与整仓克隆一致。本机目录来源只在扫描阶段做路径过滤。
+
+**稀疏克隆**：Git 来源且 `subdir` 非空时，插件先执行 `git clone --depth 1 --no-tags --single-branch --filter=blob:none --sparse --branch <ref> -- <url> <dir>`，再执行 `git -C <dir> sparse-checkout set --cone <subdir>`，只下载目标子目录与仓库根级文件（cone 模式语义）。因此 vercel/next.js（约 2.6 GB）这类 monorepo 也能在 git 超时与快照上限内导入。commit-ref 同样支持：先浅克隆，设置稀疏，再 `git fetch --depth 1 origin <sha>` 与 `git checkout --detach FETCH_HEAD`。请传完整 40 位 SHA——缩写 SHA 不能作为 ref 被 `git fetch` 解析，会回退到全量克隆。
+
+只要任一步不被支持（旧版 git 不支持 `--sparse` / `--filter`、服务器不支持 partial clone、子目录不存在等），插件会删除半成品目录并回退到原有的全量浅克隆，行为与 1.1.1 完全一致。
 
     {
       "ok": true,
@@ -142,7 +155,9 @@ url 可以是 Git URL、本机绝对路径或 file:// URL。ref 为空时使用�
 
     { "ok": true, "installed": ["git-commit"], "skipped": [], "snapshot": "code.comein.cn-ai-luban.git-0123abcd", "commit": "0123abcd…" }
 
-同一仓库再次导入是幂等的；同名但来自其他仓库的技能会被跳过（除非先移除）。
+同一仓库再次导入是幂等的；同名但来自其他仓库的技能会被跳过（除非先移除）。首次导入会记录 `subdir`，同一 URL 再次以非空 `subdir` 导入时会更新该字段。
+
+**边界**：一个仓库记录只保留一个快照和一个 `subdir`。对同一 URL 用不同子目录再次导入会互相覆盖快照与 `subdir`，之前来自其他子目录的技能在更新仓库时可能提示「上游仓库中已不存在该 skill 路径」；需要同时管理多个子目录时，请把它们作为彼此独立的导入分批确认。
 
 ## 修改
 

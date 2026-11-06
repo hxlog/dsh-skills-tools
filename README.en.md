@@ -40,6 +40,7 @@
 | **Repository switch** | Enable or disable every skill in a repository at once; the switch shows a mixed state when only some skills are enabled. |
 | **Inline content** | The chevron on each row expands the SKILL.md text, source repository, commit, path and update time, with update and remove actions. |
 | **Git import and snapshots** | https / ssh / intranet repositories, branches, tags, commits and subdirectories. Imports are read-only snapshots; source repositories are never modified. |
+| **Monorepo subdirectories** | Sparse checkout fetches only the target subdirectory, so pasting a `/tree/<ref>/<subdir>` URL imports skills from large monorepos such as Next.js without downloading the whole repository. |
 | **Update checks** | Compare the remote head and switch snapshots only after a successful clone. |
 
 <p align="center">
@@ -67,7 +68,7 @@ dsh plugin --profile web add dsh-skills-tools      # Web
 dsh plugin --profile desktop add dsh-skills-tools  # Desktop
 ```
 
-Current version **1.1.1**: grouped by repository, repository switch, and completing skills from an existing snapshot.
+Current version **1.2.0**: sparse checkout for monorepo subdirectories, alongside grouped-by-repository management, the repository switch and completing skills from an existing snapshot.
 
 > Restart `dsh web` / DSH Desktop after upgrading.
 >

@@ -93,6 +93,36 @@ await check('views expose effective names and provider state', async () => {
   assert.ok(router.repo.updateAvailable === false)
 })
 
+await check('subdirectory scan filters relPaths for a local fixture', async () => {
+  const monorepo = path.join(home, 'monorepo-repo')
+  writeSkill(path.join(monorepo, 'packages', 'web', 'skills', 'web-skill'),
+    'name: web-skill\ndescription: Web skill\n', '# Web')
+  writeSkill(path.join(monorepo, 'packages', 'cli', 'skills', 'cli-skill'),
+    'name: cli-skill\ndescription: CLI skill\n', '# CLI')
+  writeSkill(path.join(monorepo, 'shared', 'skills', 'shared-skill'),
+    'name: shared-skill\ndescription: Shared skill\n', '# Shared')
+  const scan = await manager.scanSource({ url: monorepo, subdir: 'packages/web/skills' })
+  assert.equal(scan.ok, true)
+  assert.deepEqual(scan.skills.map(function (s) { return s.relPath }), ['packages/web/skills/web-skill'])
+  assert.equal(scan.source.subdir, 'packages/web/skills')
+  const empty = await manager.scanSource({ url: monorepo, subdir: 'missing/path' })
+  assert.equal(empty.ok, true)
+  assert.equal(empty.skills.length, 0)
+  assert.ok(empty.warnings.some(function (w) { return w.includes('没有找到') }), 'a missing subdirectory must warn')
+  const imported = await manager.commitImport({ scanId: scan.scanId, skills: [{ relPath: 'packages/web/skills/web-skill', name: 'web-skill' }] })
+  assert.deepEqual(imported.installed, ['web-skill'])
+  const repoView = manager.views().repos.find(function (r) { return r.subdir === 'packages/web/skills' })
+  assert.ok(repoView, 'repo view should keep the source subdir')
+  assert.equal(repoView.url, monorepo)
+  const skillView = manager.views().skills.find(function (s) { return s.name === 'web-skill' })
+  assert.equal(skillView.relPath, 'packages/web/skills/web-skill')
+  const updated = await manager.updateSkill('web-skill')
+  assert.equal(updated.ok, true)
+  assert.equal(manager.views().repos.find(function (r) { return r.subdir === 'packages/web/skills' }).subdir, 'packages/web/skills')
+  await manager.removeSkill('web-skill')
+  assert.ok(!manager.views().repos.some(function (r) { return r.subdir === 'packages/web/skills' }), 'removing the last skill removes the repo')
+})
+
 await check('provider candidates and definitions', async () => {
   const candidates = manager.providerCandidates()
   assert.equal(candidates.length, 5)
@@ -247,6 +277,7 @@ await check('state file and lock hygiene', async () => {
   const state = JSON.parse(fs.readFileSync(path.join(home, 'dsh-skills-tools', 'state.json'), 'utf8'))
   assert.equal(state.version, 1)
   assert.equal(state.skills.length, 5)
+  assert.equal(state.repos[0].subdir, '')
 })
 
 manager.dispose()
@@ -257,4 +288,4 @@ if (problems.length > 0) {
   for (const p of problems) console.error(' - ' + p)
   process.exit(1)
 }
-console.log('manager test OK: 18 groups, provider contract + toggles + updates + idempotent re-import')
+console.log('manager test OK: 19 groups, provider contract + toggles + updates + idempotent re-import + subdir filtering')
