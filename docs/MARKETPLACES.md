@@ -62,6 +62,9 @@ Body: Import Agent Skills from any Git repository, toggle each skill on or off, 
 | hashgraph-online/awesome-ai-plugins（837★） | README 单行新增 | ✅ 已合并（2026-11-04T05:52Z），上架 HOL Registry | https://github.com/hashgraph-online/awesome-ai-plugins/pull/1147 |
 | zhu1090093659/dsh-community-plugins（1k★） | community.json 追加一条 | 🟡 维护者认可条目，已同步 upstream 等必检 | https://github.com/zhu1090093659/dsh-community-plugins/pull/77 |
 | leenkcool/Blue-Whale-Harness（196★） | Issue 收录模板 | ✅ 已收录（站点已重生成） | https://leenkcool.github.io/plugins.zh.html |
+| walkinglabs/awesome-deepseek-harness-plugins（52★） | README + README.zh 单行新增（Tools, Integrations & Automation） | 🟡 待审 | https://github.com/walkinglabs/awesome-deepseek-harness-plugins/pull/149 |
+| cordis.run（349 插件市场，web-casa 列表上游） | /submit 表单，需注册登录；可提供反链走快速通道 | ⚪ 需你登录提交 | https://cordis.run/submit |
+| web-casa/Awesome-DeepSeek-Harness-Plugins（113★） | 由 cordis.run 索引自动生成，不直接收 PR | 🟡 随 cordis.run 收录 | https://github.com/web-casa/Awesome-DeepSeek-Harness-Plugins |
 | Zhiyuan-Fan/Awesome-DeepSeek-Harness-Plugins（563★） | Issue 请求收录 | 🟡 待审 | https://github.com/Zhiyuan-Fan/Awesome-DeepSeek-Harness-Plugins/issues/108 |
 | beancookie/awesome-dsh-plugin（188★） | README + README.en 单行新增（技能包） | 🟡 待审 | https://github.com/beancookie/awesome-dsh-plugin/pull/265 |
 | kejixiaoliang/awesome-dsh-plugins（73★） | plugins/skills.md 追加一条 | 🟡 待审 | https://github.com/kejixiaoliang/awesome-dsh-plugins/pull/188 |
