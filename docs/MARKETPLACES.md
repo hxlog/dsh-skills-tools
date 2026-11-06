@@ -52,7 +52,7 @@ Body: Import Agent Skills from any Git repository, toggle each skill on or off, 
 | --- | --- | --- | --- |
 | vvlife/awesome-deepseek-harness-plugins | README 单行新增（Tools & Editor UX） | ✅ 已合并 | https://github.com/vvlife/awesome-deepseek-harness-plugins/pull/176 |
 | jiji262/awesome-deepseek-harness | README 单行新增（Agent Skills） | 🟡 待审 | https://github.com/jiji262/awesome-deepseek-harness/pull/52 |
-| dshmarketplace.dev | /submit 表单（服务器端 GitHub 校验） | 🟡 暂不可提交：服务端 GitHub 限流（2026-11-04 实测） | https://dshmarketplace.dev/submit |
+| dshmarketplace.dev | /submit 表单（服务器端 GitHub 校验） | ✅ 已在目录中（2026-11-06 表单提示 already in the catalogue） | https://dshmarketplace.dev |
 | dshplugin.app | /submit 表单 + Cloudflare Turnstile | ⛔ 需人工在浏览器完成验证码 | https://dshplugin.app/submit |
 | dshmarket.com（10.5k★，DSH 内置市场） | 目录来自 awesome-dsh-plugin registry，PR #11849 已合入 | 🟡 registry 已合入，等站点同步 | https://dshmarket.com |
 | dsh.so 公开 tracker | Issue 登记（表单 API 落到旧仓库时兜底） | ✅ 已上线（artifact 200） | https://www.dsh.so/artifact/dsh-skills-tools/ |
